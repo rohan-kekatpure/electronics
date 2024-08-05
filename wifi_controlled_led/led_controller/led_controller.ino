@@ -29,13 +29,12 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-void loop() {
-  delay(REFRESH_DELAY);
+double getLedStateFromServer() {
   WiFiClient client;
   HTTPClient http;
 
   if (WiFi.status() != WL_CONNECTED) {
-    return;
+    return -1.0;
   }
 
   http.begin(client, LED_URL.c_str());
@@ -43,23 +42,35 @@ void loop() {
 
   if (responseCode < 0) {
     Serial.printf("\n[%d error]: ", responseCode);
-    return;
+    return -1.0;
   }
 
   Serial.printf("\n[%d ok]: ", responseCode);
   String responsePayload = http.getString();
-  // Serial.println(responsePayload);
-  JSONVar reading = JSON.parse(responsePayload);
+
+  return parseServerResponse(responsePayload);
+
+}
+
+double parseServerResponse(const String& payload) {
+  JSONVar reading = JSON.parse(payload);
 
   if (JSON.typeof(reading) == "undefined") {
     Serial.println("\nJSON parsing failed");
-    return;
+    return -1.0;
   }
 
   double ledState = double(reading["led_state"]);
   Serial.printf("Reading = %f", ledState);
+  return ledState;
+}
 
-  // Update LED duty cycle
-  // analogWrite(D1, 100.0 * ledState);
+void loop() {
+  delay(REFRESH_DELAY);
+  double ledState = getLedStateFromServer(); 
+  if (ledState < 0) {
+    return; //error, dont change LED state
+  }
+  
   analogWrite(D1, int(255 * ledState));
 }
