@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .slider-container {
+            width: 300px;
+        }
+        .slider {
+            width: 100%;
+        }
+        .slider-value {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .response-box {
+            margin-top: 20px;
+            width: 100%;
+            height: 100px;
+            resize: none;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arduino Control</h1>
+        <div class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" class="slider" id="ledSlider" oninput="updateSliderValue()">
+            <div class="slider-value" id="sliderValue">LED State: 0.00</div>
+        </div>
+        <textarea class="response-box" id="responseBox" readonly></textarea>
+    </div>
+    <script>
+        function updateSliderValue() {
+            var slider = document.getElementById('ledSlider');
+            var value = parseFloat(slider.value).toFixed(2);
+            document.getElementById('sliderValue').innerText = 'LED State: ' + value;
+            sendSliderValue(value);
+        }
+
+        function sendSliderValue(value) {
+            fetch('http://192.168.1.67:5000/LED', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ led_state: parseFloat(value) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('responseBox').value = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+                document.getElementById('responseBox').value = 'Error: ' + error;
+            });
+        }
+    </script>
+</body>
+</html>
