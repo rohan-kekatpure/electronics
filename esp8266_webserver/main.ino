@@ -15,6 +15,13 @@ String readIndexHtml() {
     return "";
   }
 
+  /*
+  The `index.html` is loaded onto the flash memory of 
+  ESP8266 using the LittleFS filesystem uploader installed
+  on to the Arduino IDE. Google for how to install the 
+  LittleFS filesystem uploader and how to access the uploaded
+  files.
+  */
   File file = LittleFS.open("/index.html", "r");
   if (!file) {
     Serial.println("Failed to open file");
