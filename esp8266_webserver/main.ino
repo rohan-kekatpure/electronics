@@ -1,0 +1,63 @@
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <LittleFS.h>
+
+const char* SSID = "WIFI_NAME";
+const char* PASSWD = "WIFI_PASSWD";
+
+ESP8266WebServer server(80);
+
+String readIndexHtml() {
+  if (! LittleFS.begin()) {
+    Serial.println("Error mounting LittleFS");
+    return "";
+  }
+
+  File file = LittleFS.open("/index.html", "r");
+  if (!file) {
+    Serial.println("Failed to open file");
+    return "";
+  }
+
+  String html = "";
+  char c;
+
+  while (file.available()) {
+    c = file.read();    
+    html += c;    
+  }
+
+  file.close();  
+  return html;
+
+}
+
+void handleRoot() {  
+  const String html = readIndexHtml();  
+  server.send(200, "text/html", html);
+}
+
+void setup() {    
+  Serial.begin(115200);
+
+  Serial.printf("Connecting to: %s\n", SSID);
+  WiFi.begin(SSID, PASSWD);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("Connected");
+  Serial.println(WiFi.localIP());
+  
+  server.begin();
+  server.on("/", handleRoot);
+}
+
+void loop() {
+  server.handleClient();
+}
