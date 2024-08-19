@@ -17,7 +17,16 @@ void serveIndex() {
   if (! LittleFS.begin()) {
     Serial.println("Error mounting LittleFS");    
   }
+
+  /*
+  The `index.html` is loaded onto the flash memory of 
+  ESP8266 using the LittleFS filesystem uploader installed
+  on to the Arduino IDE. Google for how to install the 
+  LittleFS filesystem uploader and how to access the uploaded
+  files.
+  */  
   server.serveStatic("/", LittleFS, "/index.html");  
+  
 }
 
 void setup() {    
