@@ -1,3 +1,8 @@
+/*
+Example of a ESP8266-based webserver where we serve the 
+static file from the LittleFS filesystem by reading in 
+the file into a string.
+*/
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
