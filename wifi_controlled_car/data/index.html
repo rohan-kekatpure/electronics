@@ -52,6 +52,8 @@
         let carX = 0;
         let carY = 0;
         let isMouseDown = false;
+        let lastSentTime = 0; // Timestamp for last sent request
+        let debounceTimer = null;
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -60,7 +62,7 @@
             ctx.beginPath();
             ctx.arc(radius, radius, radius, Math.PI, 2 * Math.PI);
             ctx.strokeStyle = '#00FF00'; // Bright green
-            ctx.lineWidth = 5; // Thicker border
+            ctx.lineWidth = 10; // Thicker border
             ctx.stroke();
             ctx.closePath();
 
@@ -93,19 +95,24 @@
         }
 
         function sendCoordinates(x, y) {
-            fetch('http://192.168.1.83/xy', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ x: x, y: y }),
-            }).then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+            const currentTime = Date.now();
+            if (currentTime - lastSentTime >= 100) { // Minimum 100ms between requests
+                lastSentTime = currentTime;
+                
+                fetch('http://192.168.1.83/xy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ x: x, y: y }),
+                }).then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
         }
 
         function getWeightedMovement(x, y) {
@@ -118,9 +125,21 @@
             };
         }
 
-        carSVG.onload = () => {
-            draw(); // Initial draw
-        };
+        function handleMovement(mouseX, mouseY) {
+            const { x, y } = getWeightedMovement(mouseX, mouseY);
+            const distance = Math.sqrt(x * x + y * y);
+
+            if (distance <= radius - carImageWidth / 2 && mouseY <= 0) {
+                carX = x;
+                carY = y;
+                draw();
+                
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    sendCoordinates(carX / radius, -carY / radius);
+                }, 8); // Debounce delay (can be adjusted)
+            }
+        }
 
         canvas.addEventListener('mousedown', () => {
             isMouseDown = true;
@@ -137,16 +156,7 @@
             const mouseX = e.clientX - rect.left - radius;
             const mouseY = e.clientY - rect.top - radius;
 
-            // Apply weighted movement
-            const { x, y } = getWeightedMovement(mouseX, mouseY);
-            const distance = Math.sqrt(x * x + y * y);
-
-            if (distance <= radius - carImageWidth / 2 && mouseY <= 0) {
-                carX = x;
-                carY = y;
-                draw();
-                sendCoordinates(carX / radius, carY / radius);
-            }
+            handleMovement(mouseX, mouseY);
         });
 
         // Touch support for mobile devices
@@ -167,19 +177,14 @@
             const mouseX = touch.clientX - rect.left - radius;
             const mouseY = touch.clientY - rect.top - radius;
 
-            // Apply weighted movement
-            const { x, y } = getWeightedMovement(mouseX, mouseY);
-            const distance = Math.sqrt(x * x + y * y);
-
-            if (distance <= radius - carImageWidth / 2 && mouseY <= 0) {
-                carX = x;
-                carY = y;
-                draw();
-                sendCoordinates(carX / radius, carY / radius);
-            }
-
+            handleMovement(mouseX, mouseY);
+            
             e.preventDefault(); // Prevent scrolling on touch
         });
+
+        carSVG.onload = () => {
+            draw(); // Initial draw
+        };
     </script>
 </body>
 </html>

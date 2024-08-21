@@ -65,9 +65,13 @@ void setup() {
   Serial.println("");
   Serial.println("Connected");
   Serial.println(WiFi.localIP());
-  
+
+  // Register root handler
+  server.on("/", handleRoot);  
+
+  // Start the server
   server.begin();
-  server.on("/", handleRoot);
+
 }
 
 void loop() {

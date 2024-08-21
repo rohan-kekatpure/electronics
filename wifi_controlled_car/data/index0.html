@@ -60,7 +60,7 @@
             ctx.beginPath();
             ctx.arc(radius, radius, radius, Math.PI, 2 * Math.PI);
             ctx.strokeStyle = '#00FF00'; // Bright green
-            ctx.lineWidth = 5; // Thicker border
+            ctx.lineWidth = 10; // Thicker border
             ctx.stroke();
             ctx.closePath();
 
@@ -145,7 +145,8 @@
                 carX = x;
                 carY = y;
                 draw();
-                sendCoordinates(carX / radius, carY / radius);
+                sendCoordinates(carX / radius, -carY / radius);
+                setTimeout(() => {}, 100);
             }
         });
 
@@ -175,7 +176,7 @@
                 carX = x;
                 carY = y;
                 draw();
-                sendCoordinates(carX / radius, carY / radius);
+                sendCoordinates(carX / radius, -carY / radius);
             }
 
             e.preventDefault(); // Prevent scrolling on touch
