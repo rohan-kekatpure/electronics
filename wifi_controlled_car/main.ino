@@ -7,8 +7,8 @@
 #include <Arduino_JSON.h>
 
 
-const char* SSID = "Kekatpure_home";
-const char* PASSWD = "628OldStoneWifi";
+const char* SSID = "SSID";
+const char* PASSWD = "PASSWD";
 const int PWM = 255;
 double GLOBAL_LEFT_SPEED = 100.0;
 double GLOBAL_RIGHT_SPEED = 100.0;
