@@ -12,6 +12,8 @@ const char* PASSWD = "PASSWD";
 const int PWM = 255;
 double GLOBAL_LEFT_SPEED = 100.0;
 double GLOBAL_RIGHT_SPEED = 100.0;
+const uint8_t LEFT_SIDE_CONTROL_PIN = D1;
+const uint8_t RIGHT_SIDE_CONTROL_PIN = D2;
 
 ESP8266WebServer server(80);
 
@@ -64,8 +66,8 @@ void handlexy() {
   Serial.printf(fmt.c_str(), GLOBAL_LEFT_SPEED, GLOBAL_RIGHT_SPEED);
 
   // Write to Drive pins
-  analogWrite(D1, GLOBAL_LEFT_SPEED);
-  analogWrite(D2, GLOBAL_RIGHT_SPEED);
+  analogWrite(LEFT_SIDE_CONTROL_PIN, GLOBAL_LEFT_SPEED);
+  analogWrite(RIGHT_SIDE_CONTROL_PIN, GLOBAL_RIGHT_SPEED);
 }
 
 void setup() {    
