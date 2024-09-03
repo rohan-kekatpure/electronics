@@ -14,8 +14,8 @@
 #include "ircodes.h"
 
 // Webserver constants
-const char* SSID = "Kekatpure_home";
-const char* PASSWD = "628OldStoneWifi";
+const char* SSID = "ssid";
+const char* PASSWD = "passwd";
 const uint PWM = 255;
 double GLOBAL_LEFT_SPEED = 100.0;
 double GLOBAL_RIGHT_SPEED = 100.0;
