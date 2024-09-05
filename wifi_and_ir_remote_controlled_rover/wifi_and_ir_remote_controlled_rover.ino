@@ -13,19 +13,34 @@
 
 #include "ircodes.h"
 
-// Webserver constants
-const char* SSID = "ssid";
-const char* PASSWD = "passwd";
+// Rover constants
+enum class Side {LEFT, RIGHT};
+enum class Direction {FWD, REV};
+
 const uint PWM = 255;
 double GLOBAL_LEFT_SPEED = 100.0;
 double GLOBAL_RIGHT_SPEED = 100.0;
-const uint8_t LEFT_SIDE_CONTROL_PIN = D1;
-const uint8_t RIGHT_SIDE_CONTROL_PIN = D2;
+
+const uint8_t LEFT_PWM = D0;
+const uint8_t LEFT_IN1 = D1;
+const uint8_t LEFT_IN2 = D2;
+
+const uint8_t RIGHT_PWM = D3;
+const uint8_t RIGHT_IN1 = D4;
+const uint8_t RIGHT_IN2 = D5;
+
+const uint8_t LEFT_INDICATOR = D7;
+const uint8_t RIGHT_INDICATOR = D8;
+
+// Webserver constants
+const char* SSID = "Kekatpure_home";
+const char* PASSWD = "628OldStoneWifi";
 
 // IR Remote control constants 
-const uint16_t IR_RECV_PIN = D3;
+const uint16_t IR_RECV_PIN = D6;
 IRrecv irrecv(IR_RECV_PIN);
 decode_results IR_RESULT;
+
 const uint IR_MIN_LEVEL = 0;
 const uint IR_MAX_LEVEL = 9;
 const double MIN_SPEED = 0;
@@ -33,20 +48,82 @@ const double MAX_SPEED = 255;
 const double LEVEL2SPEED = double(MAX_SPEED - MIN_SPEED) / double(IR_MAX_LEVEL - IR_MIN_LEVEL);  
 const double SPEED_DELTA = LEVEL2SPEED;
 
-
 ESP8266WebServer server(80);
 
 void setLeftSpeed(const double value) {
-  analogWrite(LEFT_SIDE_CONTROL_PIN, value);
+  analogWrite(LEFT_PWM, value);
 }
 
 void setRightSpeed(const double value) {
-  analogWrite(RIGHT_SIDE_CONTROL_PIN, value);
+  analogWrite(RIGHT_PWM, value);
 }
 
 void setSpeed(const double leftSpeed, const double rightSpeed) {
   setLeftSpeed(leftSpeed);
   setRightSpeed(rightSpeed);
+}
+
+void setDirection(Side side, Direction dir) {  
+  // Car has only two sides
+  if ((side != Side::LEFT) && (side != Side::RIGHT)) {    
+    return;
+  }
+
+  // There are only two possible directions
+  if ((dir != Direction::FWD) && (dir != Direction::REV)) {
+    return;
+  }
+
+  uint8_t IN1, IN2;
+  if (side == Side::LEFT) {
+    IN1 = LEFT_IN1;
+    IN2 = LEFT_IN2;
+  } else {
+    IN1 = RIGHT_IN1;
+    IN2 = RIGHT_IN2;
+  }
+
+  if (dir == Direction::FWD) {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+  } else {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+  }
+}
+
+void leftFwd() {
+  setDirection(Side::LEFT, Direction::FWD);
+}
+
+void leftReverse() {
+  setDirection(Side::LEFT, Direction::REV);
+}
+
+void rightFwd() {
+  setDirection(Side::RIGHT, Direction::FWD);
+}
+
+void rightReverse() {
+  setDirection(Side::RIGHT, Direction::REV);
+}
+
+void fwd() {
+  leftFwd();
+  rightFwd();
+}
+
+void reverse() {
+  leftReverse();
+  rightReverse();
+}
+
+void turnIndicatorOn(const uint8_t indicatorPin) {
+  digitalWrite(indicatorPin, HIGH);
+}
+
+void turnIndicatorOff(const uint8_t indicatorPin) {
+  digitalWrite(indicatorPin, LOW);
 }
 
 void serveIndex() {
@@ -101,16 +178,20 @@ void handlexy() {
   setSpeed(GLOBAL_LEFT_SPEED, GLOBAL_RIGHT_SPEED);
 }
 
-void IRLeftTurn() {
-  setLeftSpeed(MIN_SPEED);
+void turnLeft() {
+  turnIndicatorOn(LEFT_INDICATOR);
+  leftReverse();
   delay(500);
-  setLeftSpeed(GLOBAL_LEFT_SPEED);
+  leftFwd();  
+  turnIndicatorOff(LEFT_INDICATOR);
 }
 
-void IRRightTurn() {
-  setRightSpeed(MIN_SPEED);
+void turnRight() {
+  turnIndicatorOn(RIGHT_INDICATOR);
+  rightReverse();
   delay(500);
-  setRightSpeed(GLOBAL_RIGHT_SPEED);
+  rightFwd();
+  turnIndicatorOff(RIGHT_INDICATOR);
 }
 
 void IRSetSpeed(uint level) {
@@ -118,7 +199,9 @@ void IRSetSpeed(uint level) {
     return;
   }
 
-  double speed = ceil(MIN_SPEED + level * LEVEL2SPEED);  
+  double speed = ceil(MIN_SPEED + level * LEVEL2SPEED); 
+  GLOBAL_LEFT_SPEED = speed;
+  GLOBAL_RIGHT_SPEED = speed; 
   setSpeed(speed, speed);
 }
 
@@ -150,14 +233,14 @@ void handleIR() {
     case IRCODES::LG_BTN_LEFT_ARROW:
     case IRCODES::ELEGOO_BTN_LEFT:
       Serial.println("BUTTON LEFT");
-      IRLeftTurn();
+      turnLeft();
       break;
     
     // Right turn
     case IRCODES::LG_BTN_RIGHT_ARROW:
     case IRCODES::ELEGOO_BTN_RIGHT:
       Serial.println("BUTTON RIGHT");
-      IRRightTurn();
+      turnRight();
       break;
 
     // Increase speed
@@ -253,8 +336,7 @@ void handleIR() {
 
     // Stop the car
     case IRCODES::ELEGOO_BTN_STAR:
-      Serial.println("BUTTON STAR");
-      IRStopCar();
+      Serial.println("BUTTON STAR");      
       break;
 
     // Stop the car
@@ -273,9 +355,16 @@ void handleIR() {
 }
 
 void setup() {     
-  // Pin Setup  
-  pinMode(LEFT_SIDE_CONTROL_PIN, OUTPUT);
-  pinMode(RIGHT_SIDE_CONTROL_PIN, OUTPUT);
+  pinMode(LEFT_PWM, OUTPUT);
+  pinMode(LEFT_IN1, OUTPUT);
+  pinMode(LEFT_IN2, OUTPUT);
+
+  pinMode(RIGHT_PWM, OUTPUT);
+  pinMode(RIGHT_IN1, OUTPUT);
+  pinMode(RIGHT_IN2, OUTPUT);
+
+  pinMode(LEFT_INDICATOR, OUTPUT);
+  pinMode(RIGHT_INDICATOR, OUTPUT);
 
   Serial.begin(115200);
 
@@ -301,6 +390,6 @@ void setup() {
 }
 
 void loop() {
-  // server.handleClient();
+  server.handleClient();
   handleIR();
 }
