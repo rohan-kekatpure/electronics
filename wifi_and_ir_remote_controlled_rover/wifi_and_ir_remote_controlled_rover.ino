@@ -33,8 +33,8 @@ const uint8_t LEFT_INDICATOR = D7;
 const uint8_t RIGHT_INDICATOR = D8;
 
 // Webserver constants
-const char* SSID = "Kekatpure_home";
-const char* PASSWD = "628OldStoneWifi";
+const char* SSID = "SSID";
+const char* PASSWD = "PASSWD";
 
 // IR Remote control constants 
 const uint16_t IR_RECV_PIN = D6;
