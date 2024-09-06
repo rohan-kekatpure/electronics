@@ -18,8 +18,8 @@ enum class Side {LEFT, RIGHT};
 enum class Direction {FWD, REV};
 
 const uint PWM = 255;
-double GLOBAL_LEFT_SPEED = 100.0;
-double GLOBAL_RIGHT_SPEED = 100.0;
+double GLOBAL_LEFT_SPEED = 0.0;
+double GLOBAL_RIGHT_SPEED = 0.0;
 
 const uint8_t LEFT_PWM = D0;
 const uint8_t LEFT_IN1 = D1;
@@ -52,10 +52,12 @@ ESP8266WebServer server(80);
 
 void setLeftSpeed(const double value) {
   analogWrite(LEFT_PWM, value);
+  GLOBAL_LEFT_SPEED = value;
 }
 
 void setRightSpeed(const double value) {
   analogWrite(RIGHT_PWM, value);
+  GLOBAL_RIGHT_SPEED = value;
 }
 
 void setSpeed(const double leftSpeed, const double rightSpeed) {
@@ -366,27 +368,38 @@ void setup() {
   pinMode(LEFT_INDICATOR, OUTPUT);
   pinMode(RIGHT_INDICATOR, OUTPUT);
 
+  // Setup of IR remote control
+  irrecv.enableIRIn();  
+  fwd();
+  setSpeed(0, 0);
+
   Serial.begin(115200);
 
   // Connect Wifi
   Serial.printf("Connecting to: %s\n", SSID);
   WiFi.begin(SSID, PASSWD);  
+
+  uint8_t retries = 0;
+  bool wifiConnected = false;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    if (++retries > 10) {
+      break;
+    }
+    wifiConnected = true;
   }
 
-  Serial.println("");
-  Serial.println("Connected");
-  Serial.println(WiFi.localIP()); 
-
-  // Setup of IR remote control
-  irrecv.enableIRIn();  
-
-  // Start Webserver
-  serveIndex();
-  server.on("/xy", handlexy);
-  server.begin();  
+  if (wifiConnected) {
+    Serial.println("");
+    Serial.println("Connected");
+    Serial.println(WiFi.localIP()); 
+    
+    // Start Webserver
+    serveIndex();
+    server.on("/xy", handlexy);
+    server.begin();
+  }
 }
 
 void loop() {
