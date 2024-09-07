@@ -228,7 +228,7 @@ void IRDecrSpeed() {
 void handleIR() {
   if (! irrecv.decode(&IR_RESULT)) { 
     return;
-  }   
+  }     
   switch (IR_RESULT.value) {
 
     // Left turn
@@ -352,7 +352,9 @@ void handleIR() {
       Serial.println("OTHER or UNKNOWN BUTTON");
       break;
   }  
-  irrecv.resume();  // Receive the next value
+  // Receive the next value
+  irrecv.resume(); 
+  // yield();
   delay(100);  
 }
 
@@ -394,7 +396,7 @@ void setup() {
     Serial.println("");
     Serial.println("Connected");
     Serial.println(WiFi.localIP()); 
-    
+
     // Start Webserver
     serveIndex();
     server.on("/xy", handlexy);
