@@ -4,6 +4,13 @@
 
 MotionControl::MotionControl(const PINS& pins): pins{pins} {} 
 
+void MotionControl::init() {
+  leftSpeed = 0;
+  rightSpeed = 0;
+  leftSpeedLevel = 0;
+  rightSpeedLevel = 0;
+}
+
 void MotionControl::setLeftSpeed(uint8_t value) {    
   analogWrite(pins.LEFT_PWM, value);
   leftSpeed = value;
@@ -28,25 +35,32 @@ void MotionControl::setSpeedLevel(uint8_t level) {
     return;
   }
 
-  double val = ceil(minSpeed + level * levelToSpeedFactor); 
-  uint8_t speed = static_cast<uint8_t>(val);
+  uint8_t speed = map(level, 0, 9, 0, 255);
   setSpeed(speed);
+  leftSpeedLevel = level;
+  rightSpeedLevel = level;
 }
 
 void MotionControl::incrSpeed() {
-  // uint16_t since addition can overflow uint8_t
-  uint16_t val = leftSpeed + speedStep;
-  val = min(static_cast<uint16_t>(maxSpeed), val);
-  uint8_t speed = static_cast<uint8_t>(val);  
-  setSpeed(speed);
+  /*
+    Currently usable only if leftSpeedLevel == rightSpeedLevel
+    will change to a more interesting function later which will 
+    allow increase of left and right levels even when they are
+    unequal
+  */
+  if (leftSpeedLevel != rightSpeedLevel) {
+    return;
+  }  
+  uint8_t currentSpeedLevel = leftSpeedLevel;
+  setSpeedLevel(++currentSpeedLevel);
 }
 
 void MotionControl::decrSpeed() {
-  //int since subtraction can underflow uint8_t
-  int val = leftSpeed - speedStep;
-  val = max(static_cast<int>(minSpeed), val);  
-  uint8_t speed = static_cast<uint8_t>(val);
-  setSpeed(speed, speed);
+  if (leftSpeedLevel != rightSpeedLevel) {
+    return;
+  }  
+  uint8_t currentSpeedLevel = leftSpeedLevel;
+  setSpeedLevel(--currentSpeedLevel);
 }
 
 void MotionControl::stop() {
@@ -139,4 +153,43 @@ void MotionControl::turnRight() {
   rightFwd();
   rightIndicatorOff();
 }
+
+void MotionControl::backup() {
+  // function for a short distance backup
+  reverse();
+  setSpeedLevel(6);
+  delay(500);  
+  stop();
+  fwd();
+}
+
+void MotionControl::turnMoveHalt(Turn dir) {
+  fwd();
+  setSpeedLevel(6);
+  dir == Turn::LEFT ? turnLeft() : turnRight();
+  delay(500);
+  stop();
+}
+    
+void MotionControl::goCircle(uint8_t size) {
+  fwd();
+  uint8_t rightSpeed = map(size, 1, 9, 70, 255);
+  setRightSpeed(rightSpeed);
+  setLeftSpeed(255);
+}
+
+void MotionControl::goSnake() {
+  fwd();
+  setSpeedLevel(6);
+  while (true) {
+    turnMoveHalt(Turn::LEFT);
+    delay(100);
+    turnMoveHalt(Turn::RIGHT);
+    delay(100);
+  }
+}
+
+void MotionControl::goRandomDirection() {}
+void MotionControl::goSpiral() {}
+void MotionControl::goSquare() {}
 

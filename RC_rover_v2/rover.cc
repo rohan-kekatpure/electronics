@@ -25,7 +25,7 @@ void Rover::listen() {
   if (irCode == 0) {
     return;
   }
-  
+
   switch (irCode) {
 
     // Left turn
@@ -49,11 +49,11 @@ void Rover::listen() {
       motionControl.incrSpeed();
       break;
     
-    // Decrease speed
+    // Backup
     case IRCODES::LG_BTN_DOWN_ARROW:
     case IRCODES::ELEGOO_BTN_DOWN:
       Serial.println("BUTTON DOWN");
-      motionControl.decrSpeed();
+      motionControl.backup();      
       break;
 
     // Stop the car
@@ -63,18 +63,18 @@ void Rover::listen() {
       motionControl.stop();
       break;
 
-    // Speed setting 1
+    // Trick 1
     case IRCODES::LG_BTN_1:
     case IRCODES::ELEGOO_BTN_1:
       Serial.println("BUTTON 1");
-      motionControl.setSpeedLevel(1);
+      motionControl.goCircle(1);
       break;
 
-    // Speed setting 2
+    // Trick 2
     case IRCODES::LG_BTN_2:
     case IRCODES::ELEGOO_BTN_2:
       Serial.println("BUTTON 2");
-      motionControl.setSpeedLevel(2);
+      motionControl.goCircle(3);
       break;
 
     // Speed setting 3
@@ -130,7 +130,7 @@ void Rover::listen() {
     case IRCODES::LG_BTN_0:
     case IRCODES::ELEGOO_BTN_0:
       Serial.println("BUTTON 0");
-      motionControl.stop();
+      motionControl.decrSpeed();
       break;
 
     // Stop the car
