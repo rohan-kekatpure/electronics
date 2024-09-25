@@ -150,5 +150,5 @@ void Rover::listen() {
       Serial.println(irCode, HEX);
       break;
   }  
-  delay(100);  
+  // delay(100);  
 }

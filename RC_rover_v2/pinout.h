@@ -7,9 +7,9 @@ struct PINS {
   static const uint8_t LEFT_IN1 = D1;
   static const uint8_t LEFT_IN2 = D2;
 
-  static const uint8_t RIGHT_PWM = D3;
-  static const uint8_t RIGHT_IN1 = D4;
-  static const uint8_t RIGHT_IN2 = D5;
+  static const uint8_t RIGHT_PWM = D5;
+  static const uint8_t RIGHT_IN1 = D3;
+  static const uint8_t RIGHT_IN2 = D4;
 
   static const uint8_t LEFT_INDICATOR = D7;
   static const uint8_t RIGHT_INDICATOR = D8;

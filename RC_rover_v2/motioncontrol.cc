@@ -11,6 +11,23 @@ void MotionControl::init() {
   rightSpeedLevel = 0;
 }
 
+/* 
+  Utility function to disable motors during direction changes.
+  If you dont disable, you run the risk of shorting the H bridge L298N
+*/
+void MotionControl::disable() {
+  digitalWrite(pins.LEFT_PWM, LOW);
+  digitalWrite(pins.RIGHT_PWM, LOW);
+}
+
+/*
+  Utility function to restore the motor at current speed. This function
+  is needed after direction change.
+*/
+void MotionControl::restore() {
+  setSpeed(this->leftSpeed, this->rightSpeed);
+}
+
 void MotionControl::setLeftSpeed(uint8_t value) {    
   analogWrite(pins.LEFT_PWM, value);
   leftSpeed = value;
@@ -87,6 +104,9 @@ void MotionControl::setDirection(Side side, Direction dir) {
     in2 = pins.RIGHT_IN2;
   }
 
+  // Disable motors to prevent temporary short during direction change
+  disable();
+
   if (dir == Direction::FWD) {
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
@@ -94,6 +114,9 @@ void MotionControl::setDirection(Side side, Direction dir) {
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
   }
+
+  // Enable motors at current speed level again
+  restore();
 }
 
 void MotionControl::leftFwd() {

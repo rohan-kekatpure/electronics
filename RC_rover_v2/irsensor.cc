@@ -9,6 +9,7 @@ void IRSensor::init() {
 
 uint64_t IRSensor::listen() {    
   if (irrecv.decode(&result)) {     
+    irrecv.resume();
     return result.value;
   }       
   yield();  

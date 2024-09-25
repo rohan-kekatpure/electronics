@@ -34,6 +34,8 @@ class MotionControl {
     void setSpeed(uint8_t leftSpeed, uint8_t rightSpeed);
     void setSpeed(uint8_t value);
     void setSpeedLevel(uint8_t level);       
+    void disable();
+    void restore();
 
     // Speed -- high level operations    
     void incrSpeed();
