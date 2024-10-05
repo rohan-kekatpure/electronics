@@ -24,7 +24,7 @@ class Rover {
 
   void addMoveLeftTurn();
   void addMoveRightTurn();
-  void addMoveSpeed();  
+  void addMoveTranslate();  
   void addMoveStop();
   void addMoveBackup();
 

@@ -2,22 +2,31 @@
 #include "pinout.h"
 #include "motioncontrol.h"
 
-MotionControl::MotionControl(const PINS& pins): pins{pins} {} 
+MotionControl::MotionControl(const PINS& pins)
+  : pins{pins}, leftSpeed{0}, rightSpeed{0},
+  rightSpeedLevel{0}, leftSpeedLevel{0} {} 
 
-void MotionControl::init() {
-  leftSpeed = 0;
-  rightSpeed = 0;
-  leftSpeedLevel = 0;
-  rightSpeedLevel = 0;
+void MotionControl::setModeFwd() {
+  mode = Direction::FWD;
+  pinConfigFwd();
 }
 
-/* 
-  Utility function to disable motors during direction changes.
-  If you dont disable, you run the risk of shorting the H bridge L298N
+void MotionControl::setModeRev() {
+  mode = Direction::REV;
+  pinConfigRev();
+}
+
+void MotionControl::toggleMode() {
+  mode == Direction::FWD? setModeRev() : setModeFwd();
+}
+
+/*
+  Utility function to restore the motor at current speed. This function
+  is needed after direction change.
 */
 void MotionControl::disable() {
-  digitalWrite(pins.LEFT_PWM, LOW);
-  digitalWrite(pins.RIGHT_PWM, LOW);
+  digitalWrite(LPWM, LOW);
+  digitalWrite(RPWM, LOW);
 }
 
 /*
@@ -28,13 +37,76 @@ void MotionControl::restore() {
   setSpeed(this->leftSpeed, this->rightSpeed);
 }
 
+/*
+  Configures pins for forward mode motion
+*/
+void MotionControl::pinConfigFwd() {    
+    LPWM = pins.LEFT_PWM;
+    RPWM = pins.RIGHT_PWM;
+    LIN1 = pins.LEFT_IN1;
+    LIN2 = pins.LEFT_IN2;
+    RIN1 = pins.RIGHT_IN1;
+    RIN2 = pins.RIGHT_IN2;
+}
+
+/*
+  Pin configuration for reverse mode motion. Reverse mode motion 
+  flips left <> right as well as IN1 and IN2 pins for each side.
+*/
+void MotionControl::pinConfigRev() {  
+    LPWM = pins.RIGHT_PWM;
+    RPWM = pins.LEFT_PWM;
+    LIN1 = pins.RIGHT_IN2;
+    LIN2 = pins.RIGHT_IN1;
+    RIN1 = pins.LEFT_IN2;
+    RIN2 = pins.LEFT_IN1;
+}
+
+void MotionControl::leftFwd() {
+  disable();
+  digitalWrite(LIN1, LOW);
+  digitalWrite(LIN2, HIGH);  
+  restore();
+}
+
+void MotionControl::leftReverse() {
+  disable();
+  digitalWrite(LIN1, HIGH);
+  digitalWrite(LIN2, LOW);
+  restore();
+}
+
+void MotionControl::rightFwd() {
+  disable();
+  digitalWrite(RIN1, LOW);
+  digitalWrite(RIN2, HIGH);  
+  restore();
+}
+
+void MotionControl::rightReverse() {
+  disable();
+  digitalWrite(RIN1, HIGH);
+  digitalWrite(RIN2, LOW);  
+  restore();
+}
+
+void MotionControl::fwd() {
+  leftFwd();
+  rightFwd();  
+}
+
+void MotionControl::reverse() {
+  leftReverse();
+  rightReverse();  
+}
+
 void MotionControl::setLeftSpeed(uint8_t value) {    
-  analogWrite(pins.LEFT_PWM, value);
+  analogWrite(LPWM, value);
   leftSpeed = value;
 }
 
 void MotionControl::setRightSpeed(uint8_t value) {
-  analogWrite(pins.RIGHT_PWM, value);  
+  analogWrite(RPWM, value);  
   rightSpeed = value;
 }
 
@@ -82,67 +154,6 @@ void MotionControl::decrSpeed() {
 
 void MotionControl::stop() {
   setSpeed(minSpeed);
-}
-
-void MotionControl::setDirection(Side side, Direction dir) {
-  // There are only two possible sides
-  if ((side != Side::LEFT) && (side != Side::RIGHT)) {    
-    return;
-  }
-
-  // There are only two possible directions
-  if ((dir != Direction::FWD) && (dir != Direction::REV)) {
-    return;
-  }
-
-  uint8_t in1, in2;
-  if (side == Side::LEFT) {
-    in1 = pins.LEFT_IN1;
-    in2 = pins.LEFT_IN2;
-  } else {
-    in1 = pins.RIGHT_IN1;
-    in2 = pins.RIGHT_IN2;
-  }
-
-  // Disable motors to prevent temporary short during direction change
-  disable();
-
-  if (dir == Direction::FWD) {
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-  } else {
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-  }
-
-  // Enable motors at current speed level again
-  restore();
-}
-
-void MotionControl::leftFwd() {
-  setDirection(Side::LEFT, Direction::FWD);
-}
-
-void MotionControl::leftReverse() {
-  setDirection(Side::LEFT, Direction::REV);  
-}
-
-void MotionControl::rightFwd() {
-  setDirection(Side::RIGHT, Direction::FWD);  
-}
-
-void MotionControl::rightReverse() {
-  setDirection(Side::RIGHT, Direction::REV);
-}
-
-void MotionControl::fwd() {
-  leftFwd();
-  rightFwd();
-}
-
-void MotionControl::reverse() {
-  leftReverse();
-  rightReverse();
 }
 
 void MotionControl::leftIndicatorOn() {
@@ -209,6 +220,39 @@ void MotionControl::goSnake() {
     delay(100);
     turnMoveHalt(Turn::RIGHT);
     delay(100);
+  }
+}
+
+void MotionControl::execMove(const Move &move) {
+  // Set direction
+  move.dir == 'F'? fwd() : reverse();
+
+  // Detect motion type
+  switch (move.moveType) {
+    case 'L':
+      turnLeft();
+      break;
+    case 'R':
+      turnRight();
+      break;
+    case 'B':
+      backup();
+      break;
+    case 'T':
+      setSpeed(move.speed);
+      delay(move.duration);      
+      break;
+    case 'S':
+      stop();
+      break;
+    default:
+      break;
+  }  
+}
+
+void MotionControl::execTrip(const Trip &trip) {
+  for (const Move& move: trip.getMoves()) {
+    execMove(move);
   }
 }
 

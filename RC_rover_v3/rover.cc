@@ -14,7 +14,7 @@ Rover::Rover(const PINS& pins)
 void Rover::init() {
   pins.init();
   irSensor.init();
-  motionControl.fwd();
+  motionControl.setModeFwd();  
 }
 
 void Rover::addMoveLeftTurn() {    
@@ -25,8 +25,8 @@ void Rover::addMoveRightTurn() {
   trip.addMove(Move('F', 'R', motionControl.leftSpeed, 0));
 }
 
-void Rover::addMoveSpeed() {
-  trip.addMove(Move('F', '>', motionControl.leftSpeed, 0));
+void Rover::addMoveTranslate() {
+  trip.addMove(Move('F', 'T', motionControl.leftSpeed, 0));
 }
 
 void Rover::addMoveStop() {
@@ -40,37 +40,40 @@ void Rover::addMoveBackup() {
 void Rover::setSpeedLevel(uint8_t value) {
   trip.endLastMove();      
   motionControl.setSpeedLevel(value);
-  addMoveSpeed();  
+  addMoveTranslate();  
 }
 
 void Rover::incrSpeed() {
   trip.endLastMove();
   motionControl.incrSpeed();
-  addMoveSpeed();
+  addMoveTranslate();
 }
 
 void Rover::decrSpeed() {
   trip.endLastMove();
   motionControl.decrSpeed();
-  addMoveSpeed();    
+  addMoveTranslate();    
 }
 
 void Rover::backup() {
   trip.endLastMove();
   motionControl.backup();
   addMoveBackup();
+  addMoveStop();
 }
 
 void Rover::turnLeft() {
   trip.endLastMove();      
   motionControl.turnLeft();
   addMoveLeftTurn();
+  addMoveTranslate();
 }
 
 void Rover::turnRight() {
   trip.endLastMove();      
   motionControl.turnRight();
   addMoveRightTurn();
+  addMoveTranslate();
 }
 
 void Rover::stop() {
@@ -180,8 +183,17 @@ void Rover::listen() {
       break;
 
     // Stop the car
-    case IRCODES::ELEGOO_BTN_STAR:
-      Serial.println("BUTTON STAR");      
+    case IRCODES::LG_BTN_UNDO:
+    case IRCODES::LG_BTN_FLASHBK:
+    case IRCODES::ELEGOO_BTN_STAR:      
+      Serial.println("Trip:");  
+      Serial.println(trip.toString().c_str());
+      Serial.println("Reverse trip:");
+      Serial.println(trip.reverse().toString().c_str());
+      motionControl.setModeRev();
+      motionControl.execTrip(trip);
+      trip.clear();    
+      motionControl.setModeFwd();
       break;
 
     // Stop the car
@@ -191,8 +203,8 @@ void Rover::listen() {
       break;
 
     default:
-      Serial.print("UNKNOWN CODE: ");
-      Serial.println(irCode, HEX);
+      // Serial.print("UNKNOWN CODE: ");
+      // Serial.println(irCode, HEX);
       break;
   }  
   // delay(100);  
