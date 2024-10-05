@@ -8,12 +8,14 @@ MotionControl::MotionControl(const PINS& pins)
 
 void MotionControl::setModeFwd() {
   mode = Direction::FWD;
-  pinConfigFwd();
+  pinConfigFwd();      
+  fwd();
 }
 
 void MotionControl::setModeRev() {
   mode = Direction::REV;
   pinConfigRev();
+  fwd();
 }
 
 void MotionControl::toggleMode() {
@@ -100,12 +102,12 @@ void MotionControl::reverse() {
   rightReverse();  
 }
 
-void MotionControl::setLeftSpeed(uint8_t value) {    
+void MotionControl::setLeftSpeed(uint8_t value) {      
   analogWrite(LPWM, value);
   leftSpeed = value;
 }
 
-void MotionControl::setRightSpeed(uint8_t value) {
+void MotionControl::setRightSpeed(uint8_t value) {  
   analogWrite(RPWM, value);  
   rightSpeed = value;
 }
@@ -124,7 +126,7 @@ void MotionControl::setSpeedLevel(uint8_t level) {
     return;
   }
 
-  uint8_t speed = map(level, 0, 9, 0, 255);
+  uint8_t speed = map(level, 0, 9, 0, 255);  
   setSpeed(speed);
   leftSpeedLevel = level;
   rightSpeedLevel = level;
@@ -140,7 +142,7 @@ void MotionControl::incrSpeed() {
   if (leftSpeedLevel != rightSpeedLevel) {
     return;
   }  
-  uint8_t currentSpeedLevel = leftSpeedLevel;
+  uint8_t currentSpeedLevel = leftSpeedLevel;  
   setSpeedLevel(++currentSpeedLevel);
 }
 
@@ -154,6 +156,8 @@ void MotionControl::decrSpeed() {
 
 void MotionControl::stop() {
   setSpeed(minSpeed);
+  leftSpeedLevel = 0;
+  rightSpeedLevel = 0;
 }
 
 void MotionControl::leftIndicatorOn() {

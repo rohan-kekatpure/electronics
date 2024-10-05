@@ -15,6 +15,7 @@ void Rover::init() {
   pins.init();
   irSensor.init();
   motionControl.setModeFwd();  
+  addMoveStop();  
 }
 
 void Rover::addMoveLeftTurn() {    
@@ -191,7 +192,7 @@ void Rover::listen() {
       Serial.println("Reverse trip:");
       Serial.println(trip.reverse().toString().c_str());
       motionControl.setModeRev();
-      motionControl.execTrip(trip);
+      motionControl.execTrip(trip.reverse());
       trip.clear();    
       motionControl.setModeFwd();
       break;

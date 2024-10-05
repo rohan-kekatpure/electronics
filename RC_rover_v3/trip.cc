@@ -29,7 +29,7 @@ std::string Move::toString() {
 }
 
 Trip::Trip()
-  : lastMoveEnd{ millis() } {}
+  : lastMoveEnd{0} {}
 
 void Trip::endLastMove() {  
   // Terminates the last move by updating its duration
@@ -38,6 +38,9 @@ void Trip::endLastMove() {
     unsigned long now = millis();
     moves.back().duration = now - lastMoveEnd;
     lastMoveEnd = now;
+  } else {
+    lastMoveEnd = millis();
+    Serial.println("trip empty !");
   }
 }
 
@@ -57,14 +60,15 @@ std::string Trip::toString() {
   return os.str();
 }
 
-void Trip::clear() {
-  moves.clear();
+void Trip::clear() {  
+  moves.erase(moves.begin() + 1, moves.end());
+  moves[0].duration = 0;
 }
 
 Trip Trip::reverse() {
-  Trip revTrip;  
-  for (auto m: moves) {
-    revTrip.addMove(m.reverse());
-  }
+  Trip revTrip; 
+  for (auto it = moves.rbegin(); it!= moves.rend(); ++it) {    
+    revTrip.addMove(it->reverse());
+  }  
   return revTrip;
 }
