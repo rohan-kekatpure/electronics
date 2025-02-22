@@ -3,20 +3,40 @@
 
 #include<Arduino.h>
 #include "pinout.h"
+#include "trip.h"
 
 enum class Side {LEFT, RIGHT};
 enum class Direction {FWD, REV};
 enum class Turn {LEFT, RIGHT};
 
+extern volatile bool RUNLOOP;
+
+void ISR_stopLoop();
+
 class MotionControl {  
   const PINS& pins;
-  
+
+  /*
+    Pins that control left and right side of the car are 
+    not static constants, but change based on which direction
+    of the car is defined as front. For reverse motion, left
+    and right side control pins will be swapped
+  */
+  // power pins
+  uint8_t LPWM, RPWM;
+
+  // rotation direction pins
+  uint8_t LIN1, LIN2, RIN1, RIN2; 
+
+  public:
+
+  // Motion mode
+  Direction mode;
+
   const uint8_t minSpeedLevel = 1;
   const uint8_t maxSpeedLevel = 9;
   const uint8_t minSpeed = 0;
   const uint8_t maxSpeed = 255;  
-  // const double levelToSpeedFactor = double(maxSpeed - minSpeed) / double(maxSpeedLevel - minSpeedLevel);  
-  // const uint8_t speedStep = static_cast<uint8_t>(levelToSpeedFactor);
 
   uint8_t leftSpeed;
   uint8_t rightSpeed;
@@ -26,7 +46,15 @@ class MotionControl {
   public: 
     // ctor
     MotionControl(const PINS& p);
-    void init();
+
+    // motion modes    
+    void setModeFwd();
+    void setModeRev();
+    void toggleMode();
+
+    //Left and right pin assignment depends on fwd or rev motion mode
+    void pinConfigFwd();
+    void pinConfigRev();
 
     // Speed -- low level operations
     void setLeftSpeed(uint8_t value);
@@ -59,16 +87,23 @@ class MotionControl {
 
     // Steering tricks
     void goCircle(uint8_t radius);
+    void snakeMove();
+    void snake10();    
     void goSnake();
     void goRandomDirection();
     void goSpiral();
     void goSquare();
+    void goBackAndFwd();    
 
     // Indicators
     void leftIndicatorOn();
     void leftIndicatorOff();
     void rightIndicatorOn();
     void rightIndicatorOff();
+
+    // Executing Moves
+    void execMove(const Move& move);
+    void execTrip(const Trip& trip);
 };
 
 #endif

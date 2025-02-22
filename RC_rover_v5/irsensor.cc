@@ -7,9 +7,9 @@ void IRSensor::init() {
   irrecv.enableIRIn();  
 }
 
-uint64_t IRSensor::listen() {    
-  if (irrecv.decode(&result)) {     
-    irrecv.resume();
+uint64_t IRSensor::listen() {      
+  if (irrecv.decode(&result)) {         
+    irrecv.resume();    
     return result.value;
   }       
   yield();  

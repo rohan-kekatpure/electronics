@@ -2,6 +2,7 @@
 #include "pinout.h"
 #include "motioncontrol.h"
 
+volatile bool RUNLOOP = true;
 MotionControl::MotionControl(const PINS& pins)
   : pins{pins}, leftSpeed{0}, rightSpeed{0},
   rightSpeedLevel{0}, leftSpeedLevel{0} {} 
@@ -216,20 +217,9 @@ void MotionControl::goCircle(uint8_t size) {
   setLeftSpeed(255);
 }
 
-void MotionControl::goSnake() {
-  fwd();
-  setSpeedLevel(6);
-  while (true) {
-    turnMoveHalt(Turn::LEFT);
-    delay(100);
-    turnMoveHalt(Turn::RIGHT);
-    delay(100);
-  }
-}
-
 void MotionControl::execMove(const Move &move) {
-  // Set direction
-  move.dir == 'F'? fwd() : reverse();
+  // Set motion mode
+  move.dir == 'F'? setModeFwd() : setModeRev();
 
   // Detect motion type
   switch (move.moveType) {
@@ -264,3 +254,75 @@ void MotionControl::goRandomDirection() {}
 void MotionControl::goSpiral() {}
 void MotionControl::goSquare() {}
 
+void MotionControl::goBackAndFwd() {
+  setSpeedLevel(4);
+  for (int i=0; i<10; i++) {
+    fwd();
+    delay(500);
+    reverse();
+    delay(500);
+  }
+  fwd();
+  stop();
+}
+
+void MotionControl::snakeMove() {
+    turnMoveHalt(Turn::LEFT);
+    delay(100);
+    turnMoveHalt(Turn::RIGHT);
+    delay(100);  
+}
+
+void MotionControl::snake10() {
+  for (int i = 0; i < 10; i++) {
+    snakeMove();
+  }
+}
+
+void MotionControl::goSnake() {
+  /*
+    Unlike other MotionControl functions, goSnake
+    contains a while(true) loop. The only way to exit
+    this loop is if someone presses a button on the 
+    IR remote. For that we want to detect if an interrupt
+    happens. We cant use the IRRECV pin, since it is 
+    dedicated to _decoding_ the signals. So we need to
+    assign another pin. That pin is called the 
+    IR_INTERRUPT_PIN. Because we run out of pins, we have
+    to explicitly reserve a pin for detecting IR interrupts
+    by setting ENABLE_CONTS_SNAKE to true. If this variable
+    is not set to true, this function wont work. So exit 
+    early
+  */
+  if (!PINS::ENABLE_CONTS_SNAKE) {
+    return;
+  }
+
+  uint8_t iip = digitalPinToInterrupt(PINS::IR_INTERRUPT_PIN);
+  fwd();  
+  setSpeedLevel(6);  
+  RUNLOOP = true;  
+  bool interruptAttached = false;
+  while(RUNLOOP) {        
+    snakeMove();
+
+    // Attach IR interrupt to pin
+    if (!interruptAttached) {
+      attachInterrupt(
+        iip, 
+        ISR_stopLoop, 
+        FALLING
+      );   
+      delay(100); 
+      interruptAttached = true;
+    }
+  }
+
+  // Remove interrupt from pin
+  detachInterrupt(iip);
+  interruptAttached = false;
+}
+
+IRAM_ATTR void ISR_stopLoop() {  
+  RUNLOOP = false;  
+}

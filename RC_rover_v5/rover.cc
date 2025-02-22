@@ -88,98 +88,114 @@ void Rover::listen() {
   if (irCode == 0) {
     return;
   }
-
   switch (irCode) {
 
     // Left turn
     case IRCODES::LG_BTN_LEFT_ARROW:
     case IRCODES::ELEGOO_BTN_LEFT:
+      Serial.println(IRCODES::LG_BTN_LEFT_ARROW, HEX);
       turnLeft();
       break;
     
     // Right turn
     case IRCODES::LG_BTN_RIGHT_ARROW:
     case IRCODES::ELEGOO_BTN_RIGHT:
+      Serial.println(IRCODES::LG_BTN_RIGHT_ARROW, HEX);
       turnRight();
       break;
 
     // Increase speed
     case IRCODES::LG_BTN_UP_ARROW:
     case IRCODES::ELEGOO_BTN_UP:
+      Serial.println(IRCODES::LG_BTN_UP_ARROW, HEX);
       incrSpeed();
       break;
     
     // Backup
     case IRCODES::LG_BTN_DOWN_ARROW:
-    case IRCODES::ELEGOO_BTN_DOWN:    
+    case IRCODES::ELEGOO_BTN_DOWN:
+      Serial.println(IRCODES::LG_BTN_DOWN_ARROW, HEX);    
       backup();
       break;
 
     // Stop the car
     case IRCODES::LG_BTN_OK:
     case IRCODES::ELEGOO_BTN_OK:
+      Serial.println(IRCODES::LG_BTN_RIGHT_ARROW, HEX);
       stop();
       break;
 
     // Trick 1
     case IRCODES::LG_BTN_1:
     case IRCODES::ELEGOO_BTN_1:
-      Serial.println("BUTTON 1");
+      Serial.println(IRCODES::LG_BTN_1, HEX);      
       motionControl.goCircle(1);
       break;
 
     // Trick 2
     case IRCODES::LG_BTN_2:
-    case IRCODES::ELEGOO_BTN_2:
-      Serial.println("BUTTON 2");
-      motionControl.goCircle(3);      
+    case IRCODES::ELEGOO_BTN_2:      
+      Serial.println(IRCODES::LG_BTN_2, HEX);
+      motionControl.goBackAndFwd();
       break;
 
-    // Speed setting 3
+    // Trick 3
     case IRCODES::LG_BTN_3:
     case IRCODES::ELEGOO_BTN_3:
-      setSpeedLevel(3);
+      Serial.println(IRCODES::LG_BTN_3, HEX);
+      if (PINS::ENABLE_CONTS_SNAKE){
+        motionControl.goSnake();
+      } else {
+        motionControl.snake10();
+      }      
       break;
 
     // Speed setting 4
     case IRCODES::LG_BTN_4:
     case IRCODES::ELEGOO_BTN_4:
+      Serial.println(IRCODES::LG_BTN_4, HEX);
       setSpeedLevel(4);
       break;
 
     // Speed setting 5
     case IRCODES::LG_BTN_5:
     case IRCODES::ELEGOO_BTN_5:
+      Serial.println(IRCODES::LG_BTN_5, HEX);
       setSpeedLevel(5);
       break;
 
     // Speed setting 6
     case IRCODES::LG_BTN_6:
     case IRCODES::ELEGOO_BTN_6:
+      Serial.println(IRCODES::LG_BTN_6, HEX);
       setSpeedLevel(6);
       break;
 
     // Speed setting 7
     case IRCODES::LG_BTN_7:
     case IRCODES::ELEGOO_BTN_7:
+      Serial.println(IRCODES::LG_BTN_7, HEX);
       setSpeedLevel(7);
       break;
 
     // Speed setting 8
     case IRCODES::LG_BTN_8:
     case IRCODES::ELEGOO_BTN_8:
+      Serial.println(IRCODES::LG_BTN_8, HEX);
       setSpeedLevel(8);
       break;
 
     // Speed setting 9
     case IRCODES::LG_BTN_9:
     case IRCODES::ELEGOO_BTN_9:
+      Serial.println(IRCODES::LG_BTN_9, HEX);
       setSpeedLevel(9);
       break;
 
     // Stop the car
     case IRCODES::LG_BTN_0:
     case IRCODES::ELEGOO_BTN_0:
+      Serial.println(IRCODES::LG_BTN_0, HEX);
       decrSpeed();
       break;
 
@@ -187,6 +203,7 @@ void Rover::listen() {
     case IRCODES::LG_BTN_UNDO:
     case IRCODES::LG_BTN_FLASHBK:
     case IRCODES::ELEGOO_BTN_STAR:      
+      Serial.println(IRCODES::LG_BTN_UNDO, HEX);
       Serial.println("Trip:");  
       Serial.println(trip.toString().c_str());
       Serial.println("Reverse trip:");
@@ -200,6 +217,7 @@ void Rover::listen() {
     // Stop the car
     case IRCODES::LG_BTN_POWER:
     case IRCODES::ELEGOO_BTN_HASH:
+      Serial.println(IRCODES::LG_BTN_POWER, HEX);
       stop();
       break;
 

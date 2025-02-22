@@ -16,6 +16,14 @@ struct PINS {
 
   static const uint16_t IRRECV = D6;
 
+  /* To detect that an IR interrupt has occured on D6
+  we need to enable a different pin to receive an interrupt.
+  D8 on Nodemcu does not work for t his purpose and makes
+  the whole IR operation non-functional.
+  */
+  static const bool ENABLE_CONTS_SNAKE = true;
+  static const uint8_t IR_INTERRUPT_PIN = D7;
+
   void init() const {
     pinMode(LEFT_PWM, OUTPUT);
     pinMode(LEFT_IN1, OUTPUT);
@@ -27,7 +35,11 @@ struct PINS {
 
     pinMode(LEFT_INDICATOR, OUTPUT);
     pinMode(RIGHT_INDICATOR, OUTPUT);
-  }
+
+    if (ENABLE_CONTS_SNAKE) {
+      pinMode(IR_INTERRUPT_PIN, INPUT);  
+    }
+  }  
 };
 
 #endif

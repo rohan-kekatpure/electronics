@@ -202,8 +202,6 @@ void Rover::listen() {
       break;
 
     default:
-      // Serial.print("UNKNOWN CODE: ");
-      // Serial.println(irCode, HEX);
       break;
   }  
   // delay(100);  

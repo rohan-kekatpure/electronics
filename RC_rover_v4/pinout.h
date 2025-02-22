@@ -25,8 +25,8 @@ struct PINS {
     pinMode(RIGHT_IN1, OUTPUT);
     pinMode(RIGHT_IN2, OUTPUT);
 
-    // pinMode(LEFT_INDICATOR, OUTPUT);
-    pinMode(RIGHT_INDICATOR, INPUT_PULLUP);
+    pinMode(LEFT_INDICATOR, OUTPUT);
+    pinMode(RIGHT_INDICATOR, OUTPUT);
   }
   
 };
