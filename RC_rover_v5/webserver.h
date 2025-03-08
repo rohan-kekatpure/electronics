@@ -1,8 +1,8 @@
 //Before setup
 
 // Webserver constants
-// const char* SSID = "Kekatpure_home";
-// const char* PASSWD = "628OldStoneWifi";
+// const char* SSID = "***";
+// const char* PASSWD = "***";
 // ESP8266WebServer server(80);
 
 // void serveIndex() {
