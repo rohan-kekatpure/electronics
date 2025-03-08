@@ -5,10 +5,15 @@ const int PDATA = D7; // DS (Data) pin of 74HC595
 const int PCLOCK = D5; // SH_CP (Clock) pin of 74HC595
 const int PLATCH = D8; // ST_CP (Latch) pin of 74HC595
 
-unsigned _HH = 0, _MM = 0, _SS = 0, _T;
+unsigned _HH = 0, _SS = 0, _T;
+volatile unsigned _MM = 0;
 unsigned long start  = millis();
 unsigned long current = start;
 unsigned period = 1000;  
+
+volatile unsigned long lastUpdateMM = 0;
+volatile unsigned long lastUpdateHH = 0;
+unsigned debounceDelay = 200;
 
 struct Digit {
   unsigned value;
@@ -106,6 +111,18 @@ void setup() {
   digitalWrite(H2.selector, HIGH);
   digitalWrite(M1.selector, HIGH);
   digitalWrite(M2.selector, HIGH);
+
+  // Attach interrupts to HH and MM increment pins
+  uint8_t MM_INT = digitalPinToInterrupt(D4);
+  attachInterrupt(MM_INT, ISR_incrementMinute, FALLING);
+}
+
+IRAM_ATTR void ISR_incrementMinute() {  
+  unsigned long now = millis();
+  if ((now - lastUpdateMM) > debounceDelay) {
+    lastUpdateMM = now;
+    _MM = _MM == 59? 0 : _MM + 1;      
+  }
 }
 
 void loop() {  
