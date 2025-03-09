@@ -1,19 +1,21 @@
 #include <Arduino.h>
 
 // Pin definitions
-const int PDATA = D7; // DS (Data) pin of 74HC595
-const int PCLOCK = D5; // SH_CP (Clock) pin of 74HC595
-const int PLATCH = D8; // ST_CP (Latch) pin of 74HC595
+const uint8_t PDATA = D7; // DS (Data) pin of 74HC595
+const uint8_t PCLOCK = D5; // SH_CP (Clock) pin of 74HC595
+const uint8_t PLATCH = D8; // ST_CP (Latch) pin of 74HC595
 
-unsigned _HH = 0, _SS = 0, _T;
-volatile unsigned _MM = 0;
-unsigned long start  = millis();
-unsigned long current = start;
-unsigned period = 1000;  
+const uint8_t MM_SET = D4; // MM set pin
+const uint8_t HH_SET = D6; // HH set pin
 
-volatile unsigned long lastUpdateMM = 0;
-volatile unsigned long lastUpdateHH = 0;
-unsigned debounceDelay = 200;
+const unsigned SECOND = 1000;
+const unsigned MINUTE = 60 * SECOND;
+const unsigned debounceDelay = 250;
+const unsigned _12HMODE = true; // Make 24 for 24H clock
+
+unsigned _HH, _MM, DISPLAY_HH;
+unsigned MMSetTime, HHSetTime;
+unsigned long now, minuteStart;
 
 struct Digit {
   unsigned value;
@@ -44,6 +46,7 @@ Display _DISPLAY{H1, H2, M1, M2};
 
 // Segment patterns (common cathode)
 const byte DIGIT_PATTERN[10] = {
+    // 0bPGFEDCBA
     0b00111111, // 0
     0b00000110, // 1
     0b01011011, // 2
@@ -64,10 +67,17 @@ void sendByte(byte data) {
   }
 }
 
-void flashDigit(const Digit& d, const unsigned duration) {
+void flashDigit(const Digit& d, const unsigned duration, const bool showDP=false) {
+  byte ptrn = DIGIT_PATTERN[d.value]; 
+
+  // Add decimal point (set MSB) if showDP is true
+  if (showDP) {
+    ptrn |= 0b10000000;
+  }
+
   // Push the value
   digitalWrite(PLATCH, LOW);
-  sendByte(DIGIT_PATTERN[d.value]);
+  sendByte(ptrn);
   digitalWrite(PLATCH, HIGH);
 
   // Enable the selector
@@ -89,9 +99,9 @@ void printDigit(const Digit& d) {
 void cycle(const Display& display) {
   const unsigned duration = 1;    
   flashDigit(display.d1, duration);
-  flashDigit(display.d2, duration);
+  flashDigit(display.d2, duration, true);
   flashDigit(display.d3, duration);  
-  flashDigit(display.d4, duration);
+  flashDigit(display.d4, duration, _HH > 12); // Indicate PM hours by a DP
 }
 
 void setup() {
@@ -106,44 +116,63 @@ void setup() {
   pinMode(M1.selector, OUTPUT);
   pinMode(M2.selector, OUTPUT);
 
+  // Set MM and HH set pins to INPUT
+  pinMode(MM_SET, INPUT_PULLUP);
+  pinMode(HH_SET, INPUT_PULLUP);
+
   // disable all digits
   digitalWrite(H1.selector, HIGH);
   digitalWrite(H2.selector, HIGH);
   digitalWrite(M1.selector, HIGH);
   digitalWrite(M2.selector, HIGH);
 
-  // Attach interrupts to HH and MM increment pins
-  uint8_t MM_INT = digitalPinToInterrupt(D4);
-  attachInterrupt(MM_INT, ISR_incrementMinute, FALLING);
+  // Initialize timings
+  _HH = 0;
+  _MM = 0;
+  now = millis();
+  minuteStart = now;
+
+  // Initialize HH and MM set time
+  MMSetTime = 0;
+  HHSetTime = 0;
 }
 
-IRAM_ATTR void ISR_incrementMinute() {  
-  unsigned long now = millis();
-  if ((now - lastUpdateMM) > debounceDelay) {
-    lastUpdateMM = now;
-    _MM = _MM == 59? 0 : _MM + 1;      
-  }
-}
+void loop() {
+  now = millis();  
+  if (now - minuteStart > MINUTE) {
+    minuteStart = now;
+    _MM++;
+  }    
 
-void loop() {  
-  _T = 100 * _HH + _MM;
-  while (current - start < period) {
-    _DISPLAY.set(_T);
-    cycle(_DISPLAY);  
-    current = millis();
-  }
-  start = current; 
-  if (++_SS == 60) {
-    _SS = 0;
-    ++_MM;
-  }
-
-  if (_MM == 60) {
+  // Reset hour at 60 minutes
+  if (_MM >= 60) {
     _MM = 0;
-    ++_HH;
-  }
+    _HH++;
+  }      
 
-  if (_HH == 24) {
+  // Reset day at 24 hours
+  if (_HH >= 24) {
     _HH = 0;
   }
+
+  if (_12HMODE && (_HH > 12)) {
+    DISPLAY_HH = _HH - 12;
+  } else {
+    DISPLAY_HH = _HH;
+  }
+
+  _DISPLAY.set(100 * DISPLAY_HH + _MM);
+  cycle(_DISPLAY);  
+
+  // Minute increment
+  if ((digitalRead(MM_SET) == LOW) && (now - MMSetTime > debounceDelay)) {
+    _MM++;
+    MMSetTime = now;
+  } 
+
+    // Hour increment
+  if ((digitalRead(HH_SET) == LOW) && (now - HHSetTime > debounceDelay)) {
+    _HH++;
+    HHSetTime = now;
+  } 
 }
