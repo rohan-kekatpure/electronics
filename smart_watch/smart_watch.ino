@@ -11,7 +11,7 @@ const uint8_t HH_SET = D6; // HH set pin
 const unsigned SECOND = 1000;
 const unsigned MINUTE = 60 * SECOND;
 const unsigned debounceDelay = 250;
-const unsigned _12HMODE = true; // Make 24 for 24H clock
+const unsigned _12HMODE = true; // Make false for 24H clock
 
 unsigned _HH, _MM, DISPLAY_HH;
 unsigned MMSetTime, HHSetTime;
@@ -97,7 +97,7 @@ void printDigit(const Digit& d) {
 }
 
 void cycle(const Display& display) {
-  const unsigned duration = 1;    
+  const unsigned duration = 2;    
   flashDigit(display.d1, duration);
   flashDigit(display.d2, duration, true);
   flashDigit(display.d3, duration);  

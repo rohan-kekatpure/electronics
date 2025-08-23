@@ -18,10 +18,10 @@ struct PINS {
 
   /* To detect that an IR interrupt has occured on D6
   we need to enable a different pin to receive an interrupt.
-  D8 on Nodemcu does not work for t his purpose and makes
+  D8 on Nodemcu does not work for this purpose and makes
   the whole IR operation non-functional.
   */
-  static const bool ENABLE_CONTS_SNAKE = true;
+  static const bool ENABLE_CONTS_SNAKE = false;
   static const uint8_t IR_INTERRUPT_PIN = D7;
 
   void init() const {
