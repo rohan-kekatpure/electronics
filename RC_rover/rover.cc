@@ -154,14 +154,16 @@ void Rover::listen() {
     case IRCODES::LG_BTN_4:
     case IRCODES::ELEGOO_BTN_4:
       Serial.println(IRCODES::LG_BTN_4, HEX);
-      setSpeedLevel(4);
+      // setSpeedLevel(4);
+      motionControl.leftUTurn();
       break;
 
     // Speed setting 5
     case IRCODES::LG_BTN_5:
     case IRCODES::ELEGOO_BTN_5:
       Serial.println(IRCODES::LG_BTN_5, HEX);
-      setSpeedLevel(5);
+      // setSpeedLevel(5);
+      motionControl.rightUTurn();
       break;
 
     // Speed setting 6

@@ -81,8 +81,8 @@ class MotionControl {
     void reverse();
 
     // Steering -- high level operations
-    void turnLeft();
-    void turnRight();
+    void turnLeft(unsigned delayms=500);
+    void turnRight(unsigned delayms=500);
     void turnMoveHalt(Turn dir);
 
     // Steering tricks
@@ -100,6 +100,8 @@ class MotionControl {
     void leftIndicatorOff();
     void rightIndicatorOn();
     void rightIndicatorOff();
+    void leftUTurn();
+    void rightUTurn();
 
     // Executing Moves
     void execMove(const Move& move);

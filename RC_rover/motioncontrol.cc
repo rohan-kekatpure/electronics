@@ -177,18 +177,18 @@ void MotionControl::rightIndicatorOff() {
   digitalWrite(pins.RIGHT_INDICATOR, LOW);
 }  
 
-void MotionControl::turnLeft() {
+void MotionControl::turnLeft(unsigned delayms) {
   leftIndicatorOn();
   leftReverse();
-  delay(500);
+  delay(delayms);
   leftFwd();  
   leftIndicatorOff();
 }
 
-void MotionControl::turnRight() {
+void MotionControl::turnRight(unsigned delayms) {
   rightIndicatorOn();
   rightReverse();
-  delay(500);
+  delay(delayms);
   rightFwd();
   rightIndicatorOff();
 }
@@ -321,6 +321,14 @@ void MotionControl::goSnake() {
   // Remove interrupt from pin
   detachInterrupt(iip);
   interruptAttached = false;
+}
+
+void MotionControl::leftUTurn() {
+  turnLeft(1500);
+}
+
+void MotionControl::rightUTurn() {
+  turnRight(1500);
 }
 
 IRAM_ATTR void ISR_stopLoop() {  
