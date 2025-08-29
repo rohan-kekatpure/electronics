@@ -8,8 +8,8 @@
 /* Watch related constants */
 uint64_t count = 0;
 unsigned short seconds = 0;
-unsigned short minute = 52;
-unsigned short hour = 15;
+unsigned short minute = 17;
+unsigned short hour = 16;
 unsigned short day = 29;
 unsigned short month = 8;
 unsigned short year = 2025;
@@ -17,14 +17,14 @@ unsigned short ticksPerSecond = 4;
 FspTimer timer;
 
 /* Display related constants */
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+const unsigned short SCREEN_WIDTH = 128; // OLED display width, in pixels
+const unsigned short SCREEN_HEIGHT = 64; // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 // The pins for I2C are defined by the Wire-library. 
 // On an arduino UNO:       A4(SDA), A5(SCL)
-#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C
+const unsigned short OLED_RESET = -1; // Reset pin # (or -1 if sharing Arduino reset pin)
+const unsigned short SCREEN_ADDRESS = 0x3C;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Interrupt service routine
