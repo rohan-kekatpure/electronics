@@ -8,7 +8,7 @@
 /* Watch related constants */
 uint64_t count = 0;
 unsigned short seconds = 0;
-unsigned short minute = 35;
+unsigned short minute = 52;
 unsigned short hour = 15;
 unsigned short day = 29;
 unsigned short month = 8;
@@ -75,6 +75,26 @@ void updateDateAndTime() {
     year++;
     month = 1;
   }
+}
+
+void displayDateAndTime() {    
+  char datebuf[11];
+  char timebuf[9];
+  fmtTime(timebuf);
+  fmtDate(datebuf);
+  display.clearDisplay();
+  display.setCursor(0,  5);
+
+  display.setTextSize(2, 2);         
+  display.println(datebuf);
+
+  display.setTextSize(1);  
+  display.println();  
+
+  display.setTextSize(2, 4);  
+  display.println(timebuf);
+
+  display.display();
 }
 
 bool beginTimer(float rate) {
@@ -144,23 +164,5 @@ void setup() {
 
 void loop() {    
   updateDateAndTime();  
-  
-  /* Display */
-  char datebuf[11];
-  char timebuf[9];
-  fmtTime(timebuf);
-  fmtDate(datebuf);
-  display.clearDisplay();
-  display.setCursor(0,  5);
-
-  display.setTextSize(2, 2);         
-  display.println(datebuf);
-
-  display.setTextSize(1);  
-  display.println();  
-
-  display.setTextSize(2, 4);  
-  display.println(timebuf);
-
-  display.display();
+  displayDateAndTime();
 }
