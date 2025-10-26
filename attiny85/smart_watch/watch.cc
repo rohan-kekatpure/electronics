@@ -6,7 +6,8 @@
 volatile uint8_t TICKFLAG = 0;
 volatile uint8_t SELECTOR_PRESS = 0;
 volatile uint8_t SETTER_PRESS = 0;
-volatile uint8_t DEBOUNCE_COUNTER = 0;
+volatile uint8_t SELECTOR_DEBOUNCE = 0;
+volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
 
@@ -18,17 +19,17 @@ ISR(TIMER0_COMPA_vect) {
     TICKFLAG = 1;
   }
 
-  if (DEBOUNCE_COUNTER > 0) {
-    DEBOUNCE_COUNTER--;
+  if (SELECTOR_DEBOUNCE > 0) {
+    SELECTOR_DEBOUNCE--;
   }
 }
 
 ISR(PCINT0_vect) { 
-  if (DEBOUNCE_COUNTER == 0) {
+  if (SELECTOR_DEBOUNCE == 0) {
     /* PINB3 high == PINB & (1 << PB3) */  
     if (!(PINB & (1 << PB3))) {
       SELECTOR_PRESS = 1;
-      DEBOUNCE_COUNTER = 50;
+      SELECTOR_DEBOUNCE = 50;
     }
   }  
 }
@@ -46,54 +47,32 @@ void updateSelector() {
 
 void selectField() {    
   uint8_t cx, cy;
-  uint8_t flen = 12;  
+  uint8_t flen = 12;
+  static uint8_t prevSelector = 0;  
   switch (SELECTOR) {
-    case 0:
-      cx = 9;
-      cy = 10;      
-      flen = 12;
-      break;
-    case 1:
-      cx = 27;
-      cy = 10;  
-      flen = 12;    
-      break;
-    case 2: 
-      cx = 45;
-      cy = 10;
-      flen = 24;
-      break;
-    case 3: 
-      cx = 9;
-      cy = 20;
-      flen = 12; 
-      break;
-    case 4: 
-      cx = 27;
-      cy = 20;
-      flen = 12;
-      break;
-    case 5: 
-      cx = 45;
-      cy = 20;
-      flen = 12;
-      break;
-    case 6:
-    case 7:
-    default:
-      break;      
+    case 0: cx = 9; cy = 10; flen = 12; break;
+    case 1: cx = 26; cy = 10; flen = 12; break;
+    case 2: cx = 44; cy = 10; flen = 24; break;
+    case 3: cx = 9; cy = 20; flen = 12; break;
+    case 4: cx = 26; cy = 20; flen = 12; break;
+    case 5: cx = 44; cy = 20; flen = 12; break;
+    case 6: case 7: default: break;      
   }
 
-  /* Clear previous highlighting */
-  oled.setCursor(9, 10);
-  oled.clearToEOL();
-  oled.setCursor(9, 20);
-  oled.clearToEOL();
+  
+  if (SELECTOR != prevSelector) {    
+    /* Clear previous highlighting */    
+    oled.setCursor(9, 10);
+    oled.clearToEOL();
+    oled.setCursor(9, 20);
+    oled.clearToEOL();
+    prevSelector = SELECTOR;    
 
-  /* New highlight */
-  if (SELECTOR < 6) {
-    oled.setCursor(cx, cy);
-    oled.fillLength(0x0f, flen);    
+    /* New highlight */
+    if (SELECTOR < 6) {
+      oled.setCursor(cx, cy);
+      oled.fillLength(0x0f, flen);    
+    }
   }
 }
 
@@ -208,3 +187,4 @@ int main() {
     }
   }  
 }    
+
