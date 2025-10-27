@@ -203,7 +203,12 @@ void display() {
 }
 
 int main() {  
-  /* Tune down OSCCAL since the clock is running faster */
+  /* Tune down OSCCAL since the clock is running faster 
+  The value 40 was arrived at by trial and error. Every
+  chip will have its own unique value. Chips will have 
+  about 10% timing error according to spec. We can think
+  about providing a user-adjustable POT to tune this value.
+  */
   OSCCAL -= 40;
   
   /* Set up timer interrupt system to count 1 second */  
