@@ -34,6 +34,34 @@ struct DateTime {
         return 31;
     }    
   }
+
+  void tick() {
+    /* Advances 1 second and cascading down */
+    if (++sec == 60) {
+      sec = 0; 
+      min++;    
+    }
+
+    if (month == 60) {    
+      hour++;
+      min = 0;    
+    }
+
+    if (hour == 24) {
+      day++;
+      hour = 0;
+    }  
+
+    if (day > daysInMonth()) {
+      month++;
+      day = 1;    
+    }
+
+    if (month > 12) {
+      year++;
+      month = 1;
+    }
+  }
 };
 
 DateTime DATETIME{25, 10, 26, 20, 12, 0};
@@ -93,7 +121,6 @@ void selectField() {
     case 5: cx = 44; cy = 20; flen = 12; break;
     case 6: case 7: default: break;      
   }
-
   
   if (SELECTOR != prevSelector) {    
     /* Clear previous highlighting */    
@@ -153,37 +180,8 @@ void setDateTime() {
   }
 }
 
-void updateDateAndTime() {
-  DateTime *p = &DATETIME;
-  /* Note that `main` call this function only when a second
-  has elapsed. So everytime we're here, we have to update 
-  `second` */   
-  if (++p->sec == 60) {
-    p->sec = 0; 
-    p->min++;    
-  }
-
-  if (p->month == 60) {    
-    p->hour++;
-    p->min = 0;    
-  }
-
-  if (p->hour == 24) {
-    p->day++;
-    p->hour = 0;
-  }  
-
-  if (p->day > p->daysInMonth()) {
-    p->month++;
-    p->day = 1;    
-  }
-
-  if (p->month > 12) {
-    p->year++;
-    p->month = 1;
-  }
-
-  /* Format data and time strings */
+void display() {
+  DateTime *p = &DATETIME;  
   char datebuf[11];
   char timebuf[9];
   snprintf(
@@ -245,7 +243,9 @@ int main() {
 
     if (TICKFLAG == 1) {      
       TICKFLAG = 0;
-      updateDateAndTime();      
+      DATETIME.tick();
+      display();
     }
   }  
 }    
+
