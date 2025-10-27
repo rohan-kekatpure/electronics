@@ -233,18 +233,18 @@ int main() {
 
   /* Main timing loop */
   while (1) {                 
+    if (TICKFLAG == 1) {      
+      TICKFLAG = 0;
+      DATETIME.tick();
+      display();
+    }
+    
     if (SELECTOR_PRESS) {
       updateSelector();                                   
     }
 
     if (SETTER_PRESS) {
       setDateTime();
-    }
-
-    if (TICKFLAG == 1) {      
-      TICKFLAG = 0;
-      DATETIME.tick();
-      display();
     }
   }  
 }    
