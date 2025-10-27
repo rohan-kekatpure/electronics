@@ -64,7 +64,7 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME{25, 10, 27, 12, 0, 0};
+DateTime DATETIME{25, 10, 27, 14, 31, 30};
 
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
@@ -203,6 +203,9 @@ void display() {
 }
 
 int main() {  
+  /* Tune down OSCCAL since the clock is running faster */
+  OSCCAL -= 40;
+  
   /* Set up timer interrupt system to count 1 second */  
   TCCR0A |= _BV(WGM01);
   TCCR0B = (TCCR0B & 0xF8) | 0x03;
@@ -219,7 +222,7 @@ int main() {
   PCMSK |= _BV(PCINT4); // Enable INTR on DP4 
   DDRB &= ~_BV(DDB4); // DP4 as input  
   PORTB |= _BV(PORTB4); // Pullup for DP4
-    
+
   /* Set global interrupt flag in SREG */
   sei();
 
