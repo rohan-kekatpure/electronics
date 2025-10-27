@@ -42,7 +42,7 @@ struct DateTime {
       min++;    
     }
 
-    if (month == 60) {    
+    if (min == 60) {    
       hour++;
       min = 0;    
     }
@@ -64,7 +64,7 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME{25, 10, 26, 20, 12, 0};
+DateTime DATETIME{25, 10, 27, 12, 0, 0};
 
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
@@ -238,7 +238,7 @@ int main() {
       DATETIME.tick();
       display();
     }
-    
+
     if (SELECTOR_PRESS) {
       updateSelector();                                   
     }
@@ -248,4 +248,3 @@ int main() {
     }
   }  
 }    
-
