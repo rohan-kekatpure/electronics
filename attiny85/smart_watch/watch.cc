@@ -11,6 +11,33 @@ volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
 
+/* datetime */
+
+struct DateTime {
+  uint8_t year; // only last two digits
+  uint8_t month;
+  uint8_t day;
+  uint8_t hour;
+  uint8_t min;
+  uint8_t sec; 
+
+  uint8_t daysInMonth() {  
+    bool isLeapYear = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);   
+    switch (month) {
+      case 4: case 6: case 9: case 11:
+        return 30;
+        break;
+      case 2:
+        return isLeapYear ? 29 : 28;
+        break;
+      default:
+        return 31;
+    }    
+  }
+};
+
+DateTime DATETIME{25, 10, 26, 20, 12, 0};
+
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
   COUNT++;  
@@ -22,15 +49,23 @@ ISR(TIMER0_COMPA_vect) {
   if (SELECTOR_DEBOUNCE > 0) {
     SELECTOR_DEBOUNCE--;
   }
+
+  if (SETTER_DEBOUNCE > 0) {
+    SETTER_DEBOUNCE--;
+  }
 }
 
 ISR(PCINT0_vect) { 
-  if (SELECTOR_DEBOUNCE == 0) {
-    /* PINB3 high == PINB & (1 << PB3) */  
-    if (!(PINB & (1 << PB3))) {
+  /* handle pin 3 interrupt */
+  if ( (!(PINB & _BV(PB3))) && (SELECTOR_DEBOUNCE == 0) ){    
       SELECTOR_PRESS = 1;
       SELECTOR_DEBOUNCE = 50;
-    }
+  }  
+
+  /* handle pin 4 interrupt */
+  if ( (!(PINB & _BV(PB4))) && (SETTER_DEBOUNCE == 0) ){    
+      SETTER_PRESS = 1;
+      SETTER_DEBOUNCE = 50;
   }  
 }
 
@@ -76,65 +111,88 @@ void selectField() {
   }
 }
 
-void updateDateAndTime() {
-  static uint8_t seconds = 50;
-  static uint8_t minute = 37;
-  static uint8_t hour = 9;
-  static uint8_t day = 25;
-  static uint8_t month = 10;
-  static uint16_t year = 2025;
+void setDateTime() {
+  SETTER_PRESS = 0;
+  DateTime *p = &DATETIME;
+  switch (SELECTOR) {
+    case 0:       
+      if (++p->month > 12) {
+        p->month = 1;
+      }
+      break;
 
+    case 1: 
+      if (++p->day > p->daysInMonth()) {
+        p->day = 1;
+      }
+      break;
+
+    case 2: 
+      if (++p->year > 99) {
+        p->year = 25;
+      }
+      break;
+
+    case 3: 
+      if (++p->hour > 23) {
+        p->hour = 0;
+      }      
+      break;
+
+    case 4: 
+      if (++p->min > 59) {
+        p->min = 0;
+      }
+      break;
+    case 5: 
+      if (++p->sec > 59){
+        p->sec = 0;
+      }
+      break;
+    case 6: case 7: default: break;      
+  }
+}
+
+void updateDateAndTime() {
+  DateTime *p = &DATETIME;
   /* Note that `main` call this function only when a second
   has elapsed. So everytime we're here, we have to update 
   `second` */   
-  if (++seconds == 60) {
-    seconds = 0;
-    minute++;    
+  if (++p->sec == 60) {
+    p->sec = 0; 
+    p->min++;    
   }
 
-  if (minute == 60) {    
-    hour++;
-    minute = 0;    
+  if (p->month == 60) {    
+    p->hour++;
+    p->min = 0;    
   }
 
-  if (hour == 24) {
-    day++;
-    hour = 0;
+  if (p->hour == 24) {
+    p->day++;
+    p->hour = 0;
   }  
 
-  uint8_t daysInMonth;  
-  bool isLeapYear = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);   
-  switch (month) {
-    case 4: case 6: case 9: case 11:
-      daysInMonth = 30;
-      break;
-    case 2:
-      daysInMonth = isLeapYear ? 29 : 28;
-      break;
-    default:
-      daysInMonth = 31;
+  if (p->day > p->daysInMonth()) {
+    p->month++;
+    p->day = 1;    
   }
 
-  if (day > daysInMonth) {
-    month++;
-    day = 1;    
-  }
-
-  if (month > 12) {
-    year++;
-    month = 1;
+  if (p->month > 12) {
+    p->year++;
+    p->month = 1;
   }
 
   /* Format data and time strings */
   char datebuf[11];
   char timebuf[9];
   snprintf(
-    datebuf, sizeof(datebuf), "%02d/%02d/%d", 
-    int(month), int(day), int(year)
+    datebuf, sizeof(datebuf), "%02d/%02d/20%d", 
+    p->month, p->day, p->year
   );
   snprintf(
     timebuf, sizeof(timebuf), "%02d:%02d:%02d", 
-    int(hour), int(minute), int(seconds)
+    p->hour, p->min, p->sec
   );
 
   /* print buffers on OLED */
@@ -148,21 +206,21 @@ void updateDateAndTime() {
 
 int main() {  
   /* Set up timer interrupt system to count 1 second */  
-  TCCR0A |= (1 << WGM01);
+  TCCR0A |= _BV(WGM01);
   TCCR0B = (TCCR0B & 0xF8) | 0x03;
-  TIMSK |= 1 << OCIE0A;  
+  TIMSK |= _BV(OCIE0A);  
   OCR0A = 125;
 
   /* Enable pin change interrupts */
-  GIMSK |= (1 << PCIE); 
+  GIMSK |= _BV(PCIE); 
 
-  PCMSK |= (1 << PCINT3); // Enable INTR on DP3
-  DDRB &= ~(1 << DDB3); // DP3 as input
-  PORTB |= (1 << PORTB3); // Pullup for DP3
+  PCMSK |= _BV(PCINT3); // Enable INTR on DP3
+  DDRB &= ~_BV(DDB3); // DP3 as input
+  PORTB |= _BV(PORTB3); // Pullup for DP3
 
-  PCMSK |= (1 << PCINT4); // Enable INTR on DP4 
-  DDRB &= ~(1 << DDB4); // DP4 as input  
-  PORTB |= (1 << PORTB4); // Pullup for DP4
+  PCMSK |= _BV(PCINT4); // Enable INTR on DP4 
+  DDRB &= ~_BV(DDB4); // DP4 as input  
+  PORTB |= _BV(PORTB4); // Pullup for DP4
     
   /* Set global interrupt flag in SREG */
   sei();
@@ -181,10 +239,13 @@ int main() {
       updateSelector();                                   
     }
 
+    if (SETTER_PRESS) {
+      setDateTime();
+    }
+
     if (TICKFLAG == 1) {      
       TICKFLAG = 0;
       updateDateAndTime();      
     }
   }  
 }    
-
