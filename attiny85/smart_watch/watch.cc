@@ -21,14 +21,15 @@ struct DateTime {
   uint8_t min;
   uint8_t sec; 
 
-  uint8_t daysInMonth() {  
-    bool isLeapYear = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);   
+  uint8_t daysInMonth() {      
     switch (month) {
       case 4: case 6: case 9: case 11:
         return 30;
         break;
       case 2:
-        return isLeapYear ? 29 : 28;
+        /* fast divisibility check by 4: if (year & 0x03) == 0 
+        (i.e. false), then year is div by 4 */
+        return (year & 0x03) ? 28 : 29;
         break;
       default:
         return 31;
@@ -64,7 +65,7 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME{25, 10, 27, 14, 31, 30};
+DateTime DATETIME{25, 10, 28, 8, 8, 20};
 
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
@@ -178,6 +179,7 @@ void setDateTime() {
       break;
     case 6: case 7: default: break;      
   }
+  display();
 }
 
 void display() {
@@ -209,7 +211,9 @@ int main() {
   about 10% timing error according to spec. We can think
   about providing a user-adjustable POT to tune this value.
   */
-  OSCCAL -= 40;
+  if (OSCCAL > 40) {
+    OSCCAL -= 40;
+  }
   
   /* Set up timer interrupt system to count 1 second */  
   TCCR0A |= _BV(WGM01);
@@ -238,6 +242,8 @@ int main() {
   oled.setContrast(0x02);       
   oled.off();
   oled.on();
+  oled.setCursor(32, 22);
+  oled.print(OSCCAL);  
 
   /* Main timing loop */
   while (1) {                 
