@@ -65,7 +65,7 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME{25, 10, 28, 8, 8, 20};
+DateTime DATETIME{25, 10, 29, 8, 9, 0};
 
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
@@ -211,8 +211,8 @@ int main() {
   about 10% timing error according to spec. We can think
   about providing a user-adjustable POT to tune this value.
   */
-  if (OSCCAL > 40) {
-    OSCCAL -= 40;
+  if (OSCCAL > 39) {
+    OSCCAL -= 39;
   }
   
   /* Set up timer interrupt system to count 1 second */  
