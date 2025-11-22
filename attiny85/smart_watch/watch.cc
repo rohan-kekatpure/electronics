@@ -3,6 +3,7 @@
 #include <TinyWireM.h>
 #include <Tiny4kOLED.h>
 
+/* GLOBALS */
 volatile uint8_t TICKFLAG = 0;
 volatile uint8_t SELECTOR_PRESS = 0;
 volatile uint8_t SETTER_PRESS = 0;
@@ -10,9 +11,9 @@ volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
+uint8_t DISPLAY_TIMEOUT = 30;
 
 /* datetime */
-
 struct DateTime {
   uint8_t year; // only last two digits
   uint8_t month;
@@ -65,7 +66,31 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME{25, 10, 29, 8, 9, 0};
+DateTime DATETIME{25, 11, 2, 12, 1, 0};
+
+/* Timed display with state and countdown */
+struct TimedDisplayState {
+  bool isOn;
+  uint8_t timer;
+
+  void tick() {
+    if (timer > 0) {
+      timer--;
+    }
+
+    if (timer == 0) {
+      isOn = false;
+    }
+  }
+
+  void on() {
+    isOn = true;
+    timer = DISPLAY_TIMEOUT;
+  }
+};
+
+/* DISPLAY_STATE is changed in an ISR */
+volatile TimedDisplayState DISPLAY_STATE{true, DISPLAY_TIMEOUT};
 
 ISR(TIMER0_COMPA_vect) {
   static uint8_t COUNT = 0;
@@ -96,6 +121,11 @@ ISR(PCINT0_vect) {
       SETTER_PRESS = 1;
       SETTER_DEBOUNCE = 50;
   }  
+
+  /* handle pin 1 interrupt */
+  if (!(PINB & _BV(PB1))) {
+    DISPLAY_STATE.on();
+  }
 }
 
 void updateSelector() {  
@@ -183,6 +213,11 @@ void setDateTime() {
 }
 
 void display() {
+  if (!DISPLAY_STATE.isOn) {
+    oled.off();
+    return;
+  }
+
   DateTime *p = &DATETIME;  
   char datebuf[11];
   char timebuf[9];
@@ -202,6 +237,7 @@ void display() {
   oled.print(timebuf);
   oled.setCursor(8, 22);
   oled.print(SELECTOR); 
+  oled.on();
 }
 
 int main() {  
@@ -211,8 +247,8 @@ int main() {
   about 10% timing error according to spec. We can think
   about providing a user-adjustable POT to tune this value.
   */
-  if (OSCCAL > 39) {
-    OSCCAL -= 39;
+  if (OSCCAL > 40) {
+    OSCCAL -= 40;
   }
   
   /* Set up timer interrupt system to count 1 second */  
@@ -228,9 +264,14 @@ int main() {
   DDRB &= ~_BV(DDB3); // DP3 as input
   PORTB |= _BV(PORTB3); // Pullup for DP3
 
-  PCMSK |= _BV(PCINT4); // Enable INTR on DP4 
-  DDRB &= ~_BV(DDB4); // DP4 as input  
-  PORTB |= _BV(PORTB4); // Pullup for DP4
+  PCMSK |= _BV(PCINT4); 
+  DDRB &= ~_BV(DDB4); 
+  PORTB |= _BV(PORTB4); 
+
+  /* Set up PB1 as a WAKE UP button */
+  PCMSK |= _BV(PCINT1);
+  DDRB &= ~_BV(DDB1); 
+  PORTB |= _BV(PORTB1); 
 
   /* Set global interrupt flag in SREG */
   sei();
@@ -249,16 +290,19 @@ int main() {
   while (1) {                 
     if (TICKFLAG == 1) {      
       TICKFLAG = 0;
-      DATETIME.tick();
+      DATETIME.tick();   
+      DISPLAY_STATE.tick();
       display();
     }
 
-    if (SELECTOR_PRESS) {
-      updateSelector();                                   
+    if (SELECTOR_PRESS) {      
+      updateSelector();  
+      DISPLAY_STATE.on();                                 
     }
 
     if (SETTER_PRESS) {
       setDateTime();
+      DISPLAY_STATE.on();
     }
   }  
 }    
