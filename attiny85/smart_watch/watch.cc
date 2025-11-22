@@ -11,7 +11,7 @@ volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
-uint8_t DISPLAY_TIMEOUT = 30;
+uint8_t DISPLAY_TIMEOUT = 5;
 
 /* datetime */
 struct DateTime {
@@ -215,6 +215,8 @@ void setDateTime() {
 void display() {
   if (!DISPLAY_STATE.isOn) {
     oled.off();
+    SELECTOR = 6; 
+    updateSelector();
     return;
   }
 
@@ -297,7 +299,7 @@ int main() {
 
     if (SELECTOR_PRESS) {      
       updateSelector();  
-      DISPLAY_STATE.on();                                 
+      DISPLAY_STATE.on();                                  
     }
 
     if (SETTER_PRESS) {
