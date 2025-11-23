@@ -12,7 +12,7 @@ volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
-const uint8_t DISPLAY_TIMEOUT = 10;  // Seconds before display turns off
+const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
 
 // Date and time structure
 struct DateTime {
@@ -257,6 +257,21 @@ void updateDisplay() {
   oled.setFont(FONT6X8);
   oled.print("CAL:");
   oled.print(OSCCAL);  
+
+  // Display random squares
+  displayRandomSquares();
+}
+
+void displayRandomSquares() {    
+  oled.setFont(FONT6X8);  
+  uint8_t ptrn = (DATETIME.sec & 1) ? 0x88 : 0x11;  
+  for (uint8_t cy = 0; cy <= 60; cy += 5) {
+    for (uint8_t cx = 0; cx <= 40; cx += 15) {      
+      oled.setCursor(75 + cx, cy);      
+      oled.fillLength(ptrn, 12);
+      ptrn = ~ptrn;
+    }     
+  }  
 }
 
 void setupLowPower() {
@@ -307,7 +322,7 @@ int main() {
   oled.clear();
   oled.setContrast(0x01);
 
-  displayOn();  // Start with display off
+  DISPLAY_STATE.on(); 
 
   // Main loop
   while (1) {
