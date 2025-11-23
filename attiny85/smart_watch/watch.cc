@@ -12,7 +12,7 @@ volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
 uint8_t SELECTOR = 6;
-const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
+const uint8_t DISPLAY_TIMEOUT = 10;  // Seconds before display turns off
 
 // Date and time structure
 struct DateTime {
@@ -137,14 +137,15 @@ void selectField() {
   uint8_t flen = 12;
   static uint8_t prevSelector = 6;
 
+  uint8_t Y2 = 29;
   // Determine cursor position for each field
   switch (SELECTOR) {
     case 0: cx = 9;  cy = 10; flen = 12; break;  // Month
     case 1: cx = 26; cy = 10; flen = 12; break;  // Day
     case 2: cx = 44; cy = 10; flen = 24; break;  // Year
-    case 3: cx = 9;  cy = 20; flen = 12; break;  // Hour
-    case 4: cx = 26; cy = 20; flen = 12; break;  // Minute
-    case 5: cx = 44; cy = 20; flen = 12; break;  // Second
+    case 3: cx = 9;  cy = Y2; flen = 16; break;  // Hour
+    case 4: cx = 32; cy = Y2; flen = 16; break;  // Minute
+    case 5: cx = 55; cy = Y2; flen = 16; break;  // Second
     case 6:
     case 7:
     default:
@@ -154,9 +155,13 @@ void selectField() {
   if (SELECTOR != prevSelector) {
     // Clear previous highlight
     oled.setCursor(9, 10);
+    oled.setFont(FONT6X8);
     oled.clearToEOL();
-    oled.setCursor(9, 20);
+    
+    oled.setCursor(9, Y2);
+    oled.setFont(FONT6X8);
     oled.clearToEOL();
+
     prevSelector = SELECTOR;
 
     // Draw new highlight
@@ -237,11 +242,21 @@ void updateDisplay() {
   snprintf(timebuf, sizeof(timebuf), "%02d:%02d:%02d",
            p->hour, p->min, p->sec);
 
-  // Display on OLED
+  // Display date
   oled.setCursor(8, 1);
+  oled.setFont(FONT6X8);
   oled.print(datebuf);
+
+  // Display time
   oled.setCursor(8, 11);
+  oled.setFont(FONT8X16);
   oled.print(timebuf);
+
+  // Show calibration value
+  oled.setCursor(8, 22);
+  oled.setFont(FONT6X8);
+  oled.print("CAL:");
+  oled.print(OSCCAL);  
 }
 
 void setupLowPower() {
@@ -288,25 +303,19 @@ int main() {
   sei();  // Enable global interrupts
 
   // Initialize OLED
-  oled.begin(128, 64, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);
-  oled.setFont(FONT6X8);
+  oled.begin(128, 64, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);  
   oled.clear();
-  oled.setContrast(0xAA);
+  oled.setContrast(0x01);
 
-  // Show calibration value briefly
-  oled.setCursor(32, 22);
-  oled.print("CAL:");
-  oled.print(OSCCAL);  
-
-  displayOff();  // Start with display off
+  displayOn();  // Start with display off
 
   // Main loop
   while (1) {
     // Handle 1-second tick
     if (TICKFLAG) {
       TICKFLAG = 0;
-      DATETIME.tick();          // Update time
-      DISPLAY_STATE.tick();     // Update display timeout
+      DATETIME.tick();          
+      DISPLAY_STATE.tick();
 
       // Manage display state
       if (DISPLAY_STATE.isOn) {
@@ -320,13 +329,13 @@ int main() {
     // Handle selector button
     if (SELECTOR_PRESS) {
       updateSelector();
-      DISPLAY_STATE.on();       // Wake display
+      DISPLAY_STATE.on();       
     }
 
     // Handle setter button
     if (SETTER_PRESS) {
       setDateTime();
-      DISPLAY_STATE.on();       // Wake display
+      DISPLAY_STATE.on();       
     }
 
     sleep_mode();  // Sleep until next interrupt (saves ~0.35mA)
