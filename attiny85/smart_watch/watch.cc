@@ -11,8 +11,9 @@ volatile uint8_t SETTER_PRESS = 0;
 volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
-uint8_t SELECTOR = 8;
 const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
+uint8_t SELECTOR_MAX = 0x0F;
+uint8_t SELECTOR = SELECTOR_MAX;
 
 // Date and time structure
 struct DateTime {
@@ -133,7 +134,7 @@ ISR(PCINT0_vect) {
 }
 
 void updateSelector() {
-  SELECTOR = (SELECTOR + 1) & 0x0F;  // Modulo 8 using bitwise AND
+  SELECTOR = (SELECTOR + 1) & SELECTOR_MAX;  // Modulo 8 using bitwise AND
   SELECTOR_PRESS = 0;
   selectField();
 }
@@ -141,7 +142,7 @@ void updateSelector() {
 void selectField() {
   uint8_t cx, cy;
   uint8_t flen = 12;
-  static uint8_t prevSelector = 8;
+  static uint8_t prevSelector = SELECTOR_MAX;
 
   uint8_t Y2 = 29;
   // Determine cursor position for each field
@@ -229,10 +230,14 @@ void setDateTime() {
       if (++p->weekday > 6) {
         p->weekday = 0;
       }      
+      break;
+
     case 7:      
       if (++OSCCAL == 0XFF) {
         OSCCAL = 0;
       }
+      break;
+      
     default:
       break;
   }
@@ -244,8 +249,8 @@ void displayOn() {
 
 void displayOff() {  
   oled.off(); 
-  SELECTOR = 6;
-  updateSelector();
+  SELECTOR = SELECTOR_MAX;
+  selectField();
 }
 
 void updateDisplay() {  
