@@ -12,8 +12,9 @@ volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
 const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
-uint8_t SELECTOR_MAX = 0x0F;
+const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
+char MSG[9] = "CYPRESS ";
 
 // Date and time structure
 struct DateTime {
@@ -144,25 +145,32 @@ void selectField() {
   uint8_t flen = 12;
   static uint8_t prevSelector = SELECTOR_MAX;
 
-  uint8_t Y2 = 29;
+  uint8_t Y2 = 28;
   // Determine cursor position for each field
   switch (SELECTOR) {
-    case 0: cx = 9;  cy = 10; flen = 12; break;  // Month
-    case 1: cx = 26; cy = 10; flen = 12; break;  // Day
-    case 2: cx = 44; cy = 10; flen = 24; break;  // Year
+    case 0: cx = 9;  cy = 9; flen = 12; break;  // Month
+    case 1: cx = 26; cy = 9; flen = 12; break;  // Day
+    case 2: cx = 44; cy = 9; flen = 24; break;  // Year
     case 3: cx = 9;  cy = Y2; flen = 16; break;  // Hour
     case 4: cx = 32; cy = Y2; flen = 16; break;  // Minute
     case 5: cx = 55; cy = Y2; flen = 16; break;  // Second
-    case 6: cx = 9; cy = 31; flen = 18; break; // weekday
-    case 7: cx = 60; cy = 31; flen = 18; break; // OSCCAL value
-    case 8: case 9: case 10: case 11: case 12: case 13: case 14: case 15:
+    case 6: cx = 9; cy = 30; flen = 18; break; // weekday
+    case 7: cx = 60; cy = 30; flen = 18; break; // OSCCAL value
+    case 8: cx = 8; cy = 47; flen = 6; break;
+    case 9: cx = 15; cy = 47; flen = 6; break;
+    case 10: cx = 21; cy = 47; flen = 6; break;
+    case 11: cx = 27; cy = 47; flen = 6; break;
+    case 12: cx = 33; cy = 47; flen = 6; break;
+    case 13: cx = 39; cy = 47; flen = 6; break;
+    case 14: cx = 45; cy = 47; flen = 6; break;
+    case 15: cx = 51; cy = 47; flen = 6; break;
     default:
       break;  // No selection
   }
 
   if (SELECTOR != prevSelector) {
     // Clear previous highlight
-    oled.setCursor(9, 10);
+    oled.setCursor(9, 9);
     oled.setFont(FONT6X8);
     oled.clearToEOL();
     
@@ -170,16 +178,16 @@ void selectField() {
     oled.setFont(FONT6X8);
     oled.clearToEOL();
 
-    oled.setCursor(9, 31);
+    oled.setCursor(9, 30);
     oled.setFont(FONT6X8);
     oled.clearToEOL();
 
     prevSelector = SELECTOR;
 
     // Draw new highlight
-    if (SELECTOR < 8) {
+    if (SELECTOR < 16) {
       oled.setCursor(cx, cy);
-      oled.fillLength(0x0F, flen);
+      oled.fillLength(0x01, flen);
     }
   }
 }
@@ -237,10 +245,39 @@ void setDateTime() {
         OSCCAL = 0;
       }
       break;
-      
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15: 
+      processMsg();
+      break;
     default:
       break;
   }
+}
+
+void processMsg() {
+  if ((SELECTOR < 8) || (SELECTOR > 15)) {
+    return;
+  }
+  uint8_t idx = SELECTOR - 8;
+  char c = MSG[idx];
+  
+  if (c == 'Z') {
+    c = '0';
+  } else if (c == '9') {
+    c = ' ';
+  } else if (c == ' ') {
+    c = 'A';    
+  } else {
+    c++;
+  }
+
+  MSG[idx] = c;
 }
 
 void displayOn() {  
@@ -267,22 +304,22 @@ void updateDisplay() {
   char *weekdays[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 
   // Display date
-  oled.setCursor(8, 1);
+  oled.setCursor(8, 0);
   oled.setFont(FONT6X8);
   oled.print(datebuf);
 
   // Display time
-  oled.setCursor(8, 11);
+  oled.setCursor(8, 10);
   oled.setFont(FONT8X16);
   oled.print(timebuf);
 
   // Display Weekday
   oled.setFont(FONT6X8);
-  oled.setCursor(8, 30);    
+  oled.setCursor(8, 29);    
   oled.print(weekdays[p->weekday]);
-
+  
   // Show calibration value
-  oled.setCursor(36, 30);
+  oled.setCursor(36, 29);
   oled.setFont(FONT6X8);
 
   oled.print("CLK:");
@@ -291,7 +328,12 @@ void updateDisplay() {
   } else if ((OSCCAL >= 10) && (OSCCAL <= 99)) {
     oled.print("0");
   }  
-  oled.print(OSCCAL);  
+  oled.print(OSCCAL);   
+
+  /* Display Name */
+  oled.setFont(FONT6X8);
+  oled.setCursor(8, 47);
+  oled.print(MSG);
 
   // Extra graphics 
   graphic();
