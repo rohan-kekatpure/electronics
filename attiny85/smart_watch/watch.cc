@@ -11,7 +11,7 @@ volatile uint8_t SETTER_PRESS = 0;
 volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
-uint8_t SELECTOR = 6;
+uint8_t SELECTOR = 8;
 const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
 
 // Date and time structure
@@ -22,6 +22,7 @@ struct DateTime {
   uint8_t hour;
   uint8_t min;
   uint8_t sec;
+  uint8_t weekday; // An int from 0 to 6;
 
   uint8_t daysInMonth() {
     switch (month) {
@@ -47,8 +48,13 @@ struct DateTime {
     }
 
     if (hour == 24) {
-      day++;
-      hour = 0;
+      day++;      
+      hour = 0;      
+      weekday++;
+    }
+
+    if (weekday > 6) {
+      weekday = 0;
     }
 
     if (day > daysInMonth()) {
@@ -127,7 +133,7 @@ ISR(PCINT0_vect) {
 }
 
 void updateSelector() {
-  SELECTOR = (SELECTOR + 1) & 0x07;  // Modulo 8 using bitwise AND
+  SELECTOR = (SELECTOR + 1) & 0x0F;  // Modulo 8 using bitwise AND
   SELECTOR_PRESS = 0;
   selectField();
 }
@@ -135,7 +141,7 @@ void updateSelector() {
 void selectField() {
   uint8_t cx, cy;
   uint8_t flen = 12;
-  static uint8_t prevSelector = 6;
+  static uint8_t prevSelector = 8;
 
   uint8_t Y2 = 29;
   // Determine cursor position for each field
@@ -146,8 +152,9 @@ void selectField() {
     case 3: cx = 9;  cy = Y2; flen = 16; break;  // Hour
     case 4: cx = 32; cy = Y2; flen = 16; break;  // Minute
     case 5: cx = 55; cy = Y2; flen = 16; break;  // Second
-    case 6:
-    case 7:
+    case 6: cx = 9; cy = 31; flen = 18; break; // weekday
+    case 7: cx = 60; cy = 31; flen = 18; break; // OSCCAL value
+    case 8: case 9: case 10: case 11: case 12: case 13: case 14: case 15:
     default:
       break;  // No selection
   }
@@ -162,12 +169,16 @@ void selectField() {
     oled.setFont(FONT6X8);
     oled.clearToEOL();
 
+    oled.setCursor(9, 31);
+    oled.setFont(FONT6X8);
+    oled.clearToEOL();
+
     prevSelector = SELECTOR;
 
     // Draw new highlight
-    if (SELECTOR < 6) {
+    if (SELECTOR < 8) {
       oled.setCursor(cx, cy);
-      oled.fillLength(0x0f, flen);
+      oled.fillLength(0x0F, flen);
     }
   }
 }
@@ -215,7 +226,13 @@ void setDateTime() {
       break;
 
     case 6:
-    case 7:
+      if (++p->weekday > 6) {
+        p->weekday = 0;
+      }      
+    case 7:      
+      if (++OSCCAL == 0XFF) {
+        OSCCAL = 0;
+      }
     default:
       break;
   }
@@ -231,7 +248,7 @@ void displayOff() {
   updateSelector();
 }
 
-void updateDisplay() {
+void updateDisplay() {  
   DateTime *p = &DATETIME;
   char datebuf[11];
   char timebuf[9];
@@ -241,6 +258,8 @@ void updateDisplay() {
            p->month, p->day, p->year);
   snprintf(timebuf, sizeof(timebuf), "%02d:%02d:%02d",
            p->hour, p->min, p->sec);
+
+  char *weekdays[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 
   // Display date
   oled.setCursor(8, 1);
@@ -252,10 +271,21 @@ void updateDisplay() {
   oled.setFont(FONT8X16);
   oled.print(timebuf);
 
-  // Show calibration value
-  oled.setCursor(8, 22);
+  // Display Weekday
   oled.setFont(FONT6X8);
-  oled.print("CAL:");
+  oled.setCursor(8, 30);    
+  oled.print(weekdays[p->weekday]);
+
+  // Show calibration value
+  oled.setCursor(36, 30);
+  oled.setFont(FONT6X8);
+
+  oled.print("CLK:");
+  if (OSCCAL < 10) {
+    oled.print("00");
+  } else if ((OSCCAL >= 10) && (OSCCAL <= 99)) {
+    oled.print("0");
+  }  
   oled.print(OSCCAL);  
 
   // Extra graphics 
@@ -275,7 +305,7 @@ void drawPixel(int8_t x, int8_t y) {
   uint8_t bit = y & 0x07;  // Bit position within page
   
   oled.setCursor(x, page);
-  oled.startData();
+  oled.startData();   
   oled.sendData(1 << bit);  
   oled.endData();  
 }
@@ -318,88 +348,31 @@ void drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1) {
   }
 }
 
-void drawClockHands() {
-  const int8_t hourX[12] = {
-    0,   10,  17,  20,  17,  10,   // 12, 1, 2, 3, 4, 5 (max: 95+20=115)
-    0,  -10, -17, -20, -17, -10    // 6, 7, 8, 9, 10, 11
-  };
-
-  const int8_t hourY[12] = {
-    -20, -17, -10,  0,  10,  17,   // 12, 1, 2, 3, 4, 5
-    20,  17,  10,  0, -10, -17    // 6, 7, 8, 9, 10, 11
-  };
-
-  // Minute hand offsets (radius ~22 pixels, reduced from 28)
-  // Index: minute / 5 (0-11, representing 0, 5, 10, 15... 55 minutes)
-  const int8_t minX[12] = {
-    0,   11,  19,  22,  19,  11,   // 0, 5, 10, 15, 20, 25
-    0,  -11, -19, -22, -19, -11    // 30, 35, 40, 45, 50, 55
-  };
-
-  const int8_t minY[12] = {
-    -22, -19, -11,  0,  11,  19,   // 0, 5, 10, 15, 20, 25
-    22,  19,  11,  0, -11, -19    // 30, 35, 40, 45, 50, 55
-  };
-
-  const uint8_t minuteToIndex[60] = {
-    0, 0, 0, 0, 0,    // 0-4 -> 0
-    1, 1, 1, 1, 1,    // 5-9 -> 1
-    2, 2, 2, 2, 2,    // 10-14 -> 2
-    3, 3, 3, 3, 3,    // 15-19 -> 3
-    4, 4, 4, 4, 4,    // 20-24 -> 4
-    5, 5, 5, 5, 5,    // 25-29 -> 5
-    6, 6, 6, 6, 6,    // 30-34 -> 6
-    7, 7, 7, 7, 7,    // 35-39 -> 7
-    8, 8, 8, 8, 8,    // 40-44 -> 8
-    9, 9, 9, 9, 9,    // 45-49 -> 9
-    10,10,10,10,10,   // 50-54 -> 10
-    11,11,11,11,11    // 55-59 -> 11
-  };   
-  const uint8_t hourToIndex[24] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  // 0-11 AM
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11   // 12-23 (PM)
-  };  
-
-  uint8_t hour = DATETIME.hour;
-  uint8_t minute = DATETIME.min;
-  int h = hourToIndex[hour];
-  int nextH = h + 1;
-  if (nextH >= 12) nextH = 0;
+// Draw a diamond outline (45-degree rotated square)
+void drawDiamond(int cx, int cy, int size) {
+  int half = size >> 1;  
   
-  // Interpolate between hours based on minutes
-  int minIndex = minuteToIndex[minute];  
-
-  int8_t hx, hy;
-  int8_t mx, my;
-
-  if (minIndex >= 6) {
-    // Past 30 minutes, closer to next hour
-    hx = 95 + hourX[nextH];
-    hy = 32 + hourY[nextH];
-  } else {
-    hx = 95 + hourX[h];
-    hy = 32 + hourY[h];
+  // Draw four edges of diamond
+  for (int i = 0; i <= half; i++) {
+    drawPixel(cx - i, cy - half + i);
+    drawPixel(cx + i, cy - half + i);
+    drawPixel(cx - i, cy + half - i);
+    drawPixel(cx + i, cy + half - i);
   }
-
-  int m = minuteToIndex[minute];
-  mx = 95 + minX[m];
-  my = 32 + minY[m];  
-
-  /* Draw hands */
-  drawLine(95, 32, hx, hy);  
-  drawLine(95, 32, mx, my); 
 }
 
-void graphic() {    
-  oled.setFont(FONT6X8);  
-  uint8_t ptrn = (DATETIME.sec & 1) ? 0x88 : 0x11;  
-  for (uint8_t cy = 0; cy <= 60; cy += 5) {
-    for (uint8_t cx = 0; cx <= 40; cx += 15) {      
-      oled.setCursor(75 + cx, cy);      
-      oled.fillLength(ptrn, 12);
-      ptrn = ~ptrn;
-    }     
-  }  
+void graphic() {
+  int cx = 95;   // Center x (adjust as needed)
+  int cy = 32;   // Center y (adjust as needed)
+  int size = 30; // Size of shape (adjust as needed)
+ 
+  if (DATETIME.sec & 1) {
+    drawDiamond(cx, cy, 20);
+    drawDiamond(cx, cy, 30);
+  } else {
+    drawDiamond(cx, cy, 30);
+    drawDiamond(cx, cy, 40);
+  }
 }
 
 void setupLowPower() {
@@ -412,9 +385,7 @@ void setupLowPower() {
 
 int main() {
   // Calibrate oscillator (chip-specific, tune by observation)
-  if (OSCCAL > 40) {
-    OSCCAL -= 40;
-  }
+  OSCCAL = 92;
 
   // Setup Timer0 in CTC mode, prescaler /64, compare at 125
   // 8MHz/8/64/125 = 125Hz, so 125 interrupts = 1 second
