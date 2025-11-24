@@ -63,7 +63,7 @@ struct DateTime {
   }
 };
 
-DateTime DATETIME = {25, 11, 2, 12, 1, 0};
+DateTime DATETIME = {25, 11, 23, 19, 49, 0};
 
 // Display state with auto-timeout
 struct TimedDisplayState {
@@ -258,11 +258,139 @@ void updateDisplay() {
   oled.print("CAL:");
   oled.print(OSCCAL);  
 
-  // Display random squares
-  displayRandomSquares();
+  // Extra graphics 
+  graphic();
 }
 
-void displayRandomSquares() {    
+void drawPixel(int8_t x, int8_t y) {
+  /*
+    Primitive for drawing a single pixel; will
+    be used by all other graphics functions 
+  */
+  if (x < 0 || x >= 128 || y < 0 || y >= 64) {
+    return;
+  };
+  
+  uint8_t page = y >> 3;  // Convert pixel Y to page
+  uint8_t bit = y & 0x07;  // Bit position within page
+  
+  oled.setCursor(x, page);
+  oled.startData();
+  oled.sendData(1 << bit);  
+  oled.endData();  
+}
+
+void drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1) {
+  /*
+    Bresenham's Line Algorithm ; uses only integer arithmetic.
+  */
+  int8_t dx = x1 - x0;
+  int8_t dy = y1 - y0;
+  
+  if (dx < 0) {
+    dx = -dx;
+  }
+  if (dy < 0) {
+    dy = -dy;
+  }
+
+  int8_t sx = (x0 < x1) ? 1 : -1;
+  int8_t sy = (y0 < y1) ? 1 : -1;
+  
+  int8_t err = dx - dy;
+  
+  while (1) {
+    drawPixel(x0, y0);
+    
+    if (x0 == x1 && y0 == y1) break;
+    
+    int8_t e2 = err << 1;
+    
+    if (e2 > -dy) {
+      err -= dy;
+      x0 += sx;
+    }
+    
+    if (e2 < dx) {
+      err += dx;
+      y0 += sy;
+    }
+  }
+}
+
+void drawClockHands() {
+  const int8_t hourX[12] = {
+    0,   10,  17,  20,  17,  10,   // 12, 1, 2, 3, 4, 5 (max: 95+20=115)
+    0,  -10, -17, -20, -17, -10    // 6, 7, 8, 9, 10, 11
+  };
+
+  const int8_t hourY[12] = {
+    -20, -17, -10,  0,  10,  17,   // 12, 1, 2, 3, 4, 5
+    20,  17,  10,  0, -10, -17    // 6, 7, 8, 9, 10, 11
+  };
+
+  // Minute hand offsets (radius ~22 pixels, reduced from 28)
+  // Index: minute / 5 (0-11, representing 0, 5, 10, 15... 55 minutes)
+  const int8_t minX[12] = {
+    0,   11,  19,  22,  19,  11,   // 0, 5, 10, 15, 20, 25
+    0,  -11, -19, -22, -19, -11    // 30, 35, 40, 45, 50, 55
+  };
+
+  const int8_t minY[12] = {
+    -22, -19, -11,  0,  11,  19,   // 0, 5, 10, 15, 20, 25
+    22,  19,  11,  0, -11, -19    // 30, 35, 40, 45, 50, 55
+  };
+
+  const uint8_t minuteToIndex[60] = {
+    0, 0, 0, 0, 0,    // 0-4 -> 0
+    1, 1, 1, 1, 1,    // 5-9 -> 1
+    2, 2, 2, 2, 2,    // 10-14 -> 2
+    3, 3, 3, 3, 3,    // 15-19 -> 3
+    4, 4, 4, 4, 4,    // 20-24 -> 4
+    5, 5, 5, 5, 5,    // 25-29 -> 5
+    6, 6, 6, 6, 6,    // 30-34 -> 6
+    7, 7, 7, 7, 7,    // 35-39 -> 7
+    8, 8, 8, 8, 8,    // 40-44 -> 8
+    9, 9, 9, 9, 9,    // 45-49 -> 9
+    10,10,10,10,10,   // 50-54 -> 10
+    11,11,11,11,11    // 55-59 -> 11
+  };   
+  const uint8_t hourToIndex[24] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  // 0-11 AM
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11   // 12-23 (PM)
+  };  
+
+  uint8_t hour = DATETIME.hour;
+  uint8_t minute = DATETIME.min;
+  int h = hourToIndex[hour];
+  int nextH = h + 1;
+  if (nextH >= 12) nextH = 0;
+  
+  // Interpolate between hours based on minutes
+  int minIndex = minuteToIndex[minute];  
+
+  int8_t hx, hy;
+  int8_t mx, my;
+
+  if (minIndex >= 6) {
+    // Past 30 minutes, closer to next hour
+    hx = 95 + hourX[nextH];
+    hy = 32 + hourY[nextH];
+  } else {
+    hx = 95 + hourX[h];
+    hy = 32 + hourY[h];
+  }
+
+  int m = minuteToIndex[minute];
+  mx = 95 + minX[m];
+  my = 32 + minY[m];  
+
+  /* Draw hands */
+  drawLine(95, 32, hx, hy);  
+  drawLine(95, 32, mx, my); 
+}
+
+void graphic() {    
   oled.setFont(FONT6X8);  
   uint8_t ptrn = (DATETIME.sec & 1) ? 0x88 : 0x11;  
   for (uint8_t cy = 0; cy <= 60; cy += 5) {
