@@ -3,3 +3,5 @@
 **/__pycache__
 **/*backups*
 **/*.lck
+**/fabrication-toolkit-options.json
+**/fp-info-cache
