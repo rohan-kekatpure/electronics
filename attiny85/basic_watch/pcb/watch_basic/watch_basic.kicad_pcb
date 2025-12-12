@@ -556,7 +556,7 @@
 			(uuid "6a65afbf-231a-485e-b846-b495c6530adb")
 			(effects
 				(font
-					(size 0.9 0.9)
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -1013,14 +1013,14 @@
 		(descr "Tactile switch, SPST, 6.0x3.5 mm, H2.5 mm, straight, NO, gull wing leads: https://www.ckswitches.com/media/2779/pts636.pdf")
 		(tags "switch tactile SPST 1P1T straight NO SMTR C&K")
 		(property "Reference" "RST"
-			(at -4.46 1.26 90)
+			(at -4.389998 1.26 90)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "fb2ca2ed-8daf-4a86-8e6d-b880549bb668")
 			(effects
 				(font
 					(size 0.8 0.8)
-					(thickness 0.15)
+					(thickness 0.1)
 				)
 			)
 		)
@@ -1319,14 +1319,14 @@
 		(descr "Tactile switch, SPST, 6.0x3.5 mm, H2.5 mm, straight, NO, gull wing leads: https://www.ckswitches.com/media/2779/pts636.pdf")
 		(tags "switch tactile SPST 1P1T straight NO SMTR C&K")
 		(property "Reference" "SEL"
-			(at -4.440952 1.35 90)
+			(at -4.37095 1.35 90)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "a34bd6c9-f2ca-4860-853f-1523e6af7945")
 			(effects
 				(font
 					(size 0.8 0.8)
-					(thickness 0.15)
+					(thickness 0.1)
 				)
 			)
 		)
@@ -1727,14 +1727,14 @@
 		(descr "Tactile switch, SPST, 6.0x3.5 mm, H2.5 mm, straight, NO, gull wing leads: https://www.ckswitches.com/media/2779/pts636.pdf")
 		(tags "switch tactile SPST 1P1T straight NO SMTR C&K")
 		(property "Reference" "SET"
-			(at -4.421905 1.336667 90)
+			(at -4.351903 1.336667 90)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "ead32d6d-af6c-44d7-a9aa-e814a1b16473")
 			(effects
 				(font
 					(size 0.8 0.8)
-					(thickness 0.15)
+					(thickness 0.1)
 				)
 			)
 		)
@@ -2033,14 +2033,14 @@
 		(descr "Tactile switch, SPST, 6.0x3.5 mm, H2.5 mm, straight, NO, gull wing leads: https://www.ckswitches.com/media/2779/pts636.pdf")
 		(tags "switch tactile SPST 1P1T straight NO SMTR C&K")
 		(property "Reference" "WK"
-			(at -4.231428 1.263333 90)
+			(at -4.161426 1.733333 90)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "798c6de1-e97e-4fe7-8591-cd527b8c1d97")
 			(effects
 				(font
 					(size 0.8 0.8)
-					(thickness 0.15)
+					(thickness 0.1)
 				)
 			)
 		)
@@ -2339,7 +2339,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C1"
-			(at -0.261252 -1.543756 90)
+			(at -2.698004 0.870745 90)
 			(layer "B.SilkS")
 			(uuid "f6d91288-01d5-4f3c-ac74-024c657008ff")
 			(effects
@@ -2543,7 +2543,7 @@
 		(descr "http://www.keyelco.com/product-pdf.cfm?p=726")
 		(tags "CR2032 BR2032 BatteryHolder Battery")
 		(property "Reference" "BT1"
-			(at -14.125 5.3 90)
+			(at 13.01 -4.87 90)
 			(layer "B.SilkS")
 			(uuid "5358b9dd-7eea-4828-9cb4-a6e1b41f9600")
 			(effects
@@ -3198,8 +3198,8 @@
 		(layer "B.Cu")
 		(uuid "8d6801b4-596e-4c13-bd54-4ab74dca48c9")
 		(at 139.65 73.61)
-		(property "Reference" "J3"
-			(at 9.78 -6.75 180)
+		(property "Reference" "JPROG"
+			(at 9.67 -3.39 270)
 			(layer "B.SilkS")
 			(uuid "59051a99-1a01-40cd-abac-6f931dbe2f88")
 			(effects
@@ -3550,7 +3550,7 @@
 			(uuid "3c961857-f919-4a4e-9266-fcdda47b8760")
 			(effects
 				(font
-					(size 0.9 0.9)
+					(size 1 1)
 					(thickness 0.15)
 				)
 				(justify mirror)
@@ -3807,12 +3807,12 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor")
 		(property "Reference" "R4"
-			(at 2.595119 0.2381 90)
+			(at 2.595119 0.189728 90)
 			(layer "B.SilkS")
 			(uuid "748ff718-5f23-4326-8516-e34b4b6d916d")
 			(effects
 				(font
-					(size 0.9 0.9)
+					(size 1 1)
 					(thickness 0.15)
 				)
 				(justify mirror)
@@ -4014,7 +4014,7 @@
 			(uuid "4fce8dea-0f67-4fb0-8eb9-c87db9e542d0")
 			(effects
 				(font
-					(size 1.001079 1.001079)
+					(size 1 1)
 					(thickness 0.15)
 				)
 				(justify mirror)
@@ -4257,7 +4257,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C2"
-			(at 2.048209 -0.110789 90)
+			(at 2.66 -0.624501 90)
 			(layer "B.SilkS")
 			(uuid "a9cf6510-1778-4efc-863f-7766e22bfc74")
 			(effects
@@ -4457,7 +4457,7 @@
 	(footprint "Resistor_SMD:R_0805_2012Metric"
 		(layer "B.Cu")
 		(uuid "e1a49509-a17d-4412-9d0b-96e085ecede5")
-		(at 136.31 97.88 180)
+		(at 136.31 97.85 180)
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor")
 		(property "Reference" "R2"
@@ -4665,12 +4665,12 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor")
 		(property "Reference" "R3"
-			(at -0.04074 1.49074 90)
+			(at -2.631791 0.329969 90)
 			(layer "B.SilkS")
 			(uuid "7c570e54-22ce-4c46-b959-0df06d1e3e73")
 			(effects
 				(font
-					(size 0.9 0.9)
+					(size 1 1)
 					(thickness 0.15)
 				)
 				(justify mirror)
@@ -4869,13 +4869,12 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U2"
-			(at 2.993918 -2.070278 90)
+			(at 0.139291 2.84 90)
 			(layer "B.SilkS")
-			(hide yes)
 			(uuid "dd21393b-bc11-49e7-b8e1-481bb8f77a55")
 			(effects
 				(font
-					(size 0.8 0.8)
+					(size 1 1)
 					(thickness 0.15)
 				)
 				(justify mirror)
@@ -5139,7 +5138,7 @@
 			(uuid "eaa628b7-f439-45f1-9e87-e2789c5f943f")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 180)
+			(at 0 0 0)
 			(layer "B.Fab")
 			(uuid "604e3deb-d42f-445a-b550-d31135eb24dd")
 			(effects
@@ -5219,10 +5218,9 @@
 		(at 144.565 104.04)
 		(descr "LED SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "LED handsolder")
-		(property "Reference" "LED1"
-			(at -5.656051 0.959229 180)
+		(property "Reference" "LED"
+			(at 0.105 1.77 180)
 			(layer "B.SilkS")
-			(hide yes)
 			(uuid "d37b8f7a-c026-48fe-aa20-36f10f93f86d")
 			(effects
 				(font
