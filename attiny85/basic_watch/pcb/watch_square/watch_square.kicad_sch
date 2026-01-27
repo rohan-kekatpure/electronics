@@ -1687,235 +1687,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "MCU_Microchip_ATtiny:ATtiny85-20P"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "U"
-				(at -12.7 13.97 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left bottom)
-				)
-			)
-			(property "Value" "ATtiny85-20P"
-				(at 2.54 -13.97 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-				)
-			)
-			(property "Footprint" "Package_DIP:DIP-8_W7.62mm"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microcontroller-attiny25-attiny45-attiny85_datasheet.pdf"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "20MHz, 8kB Flash, 512B SRAM, 512B EEPROM, debugWIRE, DIP-8"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "AVR 8bit Microcontroller tinyAVR"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "DIP*W7.62mm*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "ATtiny85-20P_0_1"
-				(rectangle
-					(start -12.7 -12.7)
-					(end 12.7 12.7)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "ATtiny85-20P_1_1"
-				(pin power_in line
-					(at 0 15.24 270)
-					(length 2.54)
-					(name "VCC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 0 -15.24 90)
-					(length 2.54)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 7.62 180)
-					(length 2.54)
-					(name "AREF/PB0"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 5.08 180)
-					(length 2.54)
-					(name "PB1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 2.54 180)
-					(length 2.54)
-					(name "PB2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 0 180)
-					(length 2.54)
-					(name "XTAL1/PB3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 -2.54 180)
-					(length 2.54)
-					(name "XTAL2/PB4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 15.24 -5.08 180)
-					(length 2.54)
-					(name "~{RESET}/PB5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Mechanical:MountingHole"
 			(pin_names
 				(offset 1.016)
@@ -1994,6 +1765,282 @@
 					)
 					(fill
 						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "My_Symbols:ATTINY85-20SUR"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U2"
+				(at 197.612 9.398 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" "ATTINY85-20SUR"
+				(at 197.612 6.858 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" "8S2_ATM"
+				(at 181.61 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "ATTINY85-20SUR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "ATTINY85-20SUR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "8S2_ATM 8S2_ATM-M 8S2_ATM-L"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "ATTINY85-20SUR_0_1"
+				(polyline
+					(pts
+						(xy 189.23 5.08) (xy 189.23 -12.7)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 189.23 -12.7) (xy 205.74 -12.7)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 205.74 5.08) (xy 189.23 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 205.74 -12.7) (xy 205.74 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin power_in line
+					(at 181.61 -7.62 0)
+					(length 7.62)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 213.36 0 180)
+					(length 7.62)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "ATTINY85-20SUR_1_1"
+				(pin bidirectional line
+					(at 181.61 0 0)
+					(length 7.62)
+					(name "PB5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 181.61 -2.54 0)
+					(length 7.62)
+					(name "PB3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 181.61 -5.08 0)
+					(length 7.62)
+					(name "PB4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 213.36 -2.54 180)
+					(length 7.62)
+					(name "PB2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 213.36 -5.08 180)
+					(length 7.62)
+					(name "PB1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 213.36 -7.62 180)
+					(length 7.62)
+					(name "PB0"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
 					)
 				)
 			)
@@ -2521,8 +2568,8 @@
 		)
 	)
 	(rectangle
-		(start 101.6 62.23)
-		(end 121.92 86.36)
+		(start 101.6 69.85)
+		(end 121.92 93.98)
 		(stroke
 			(width 0)
 			(type dash)
@@ -2533,8 +2580,8 @@
 		(uuid 054c5ae0-5fef-45dd-8c85-b522d599e9a7)
 	)
 	(rectangle
-		(start 124.46 62.23)
-		(end 163.83 100.33)
+		(start 124.46 73.66)
+		(end 172.72 99.06)
 		(stroke
 			(width 0)
 			(type dash)
@@ -2545,8 +2592,8 @@
 		(uuid 0a9e258b-fc7c-4c04-9aec-5afcbd37109b)
 	)
 	(rectangle
-		(start 101.4788 89.7659)
-		(end 118.7622 111.3559)
+		(start 100.8266 98.849)
+		(end 118.11 120.439)
 		(stroke
 			(width 0)
 			(type dash)
@@ -2569,8 +2616,8 @@
 		(uuid 57277998-390c-45c0-a679-bb72f410e903)
 	)
 	(rectangle
-		(start 164.9463 100.1883)
-		(end 196.6963 119.2383)
+		(start 154.7863 102.7283)
+		(end 186.5363 121.7783)
 		(stroke
 			(width 0)
 			(type dash)
@@ -2606,7 +2653,7 @@
 	)
 	(text "Batteries\n"
 		(exclude_from_sim no)
-		(at 171.45 99.06 0)
+		(at 161.29 101.6 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2616,7 +2663,7 @@
 	)
 	(text "Mounting\n"
 		(exclude_from_sim no)
-		(at 106.68 87.63 0)
+		(at 106.0278 96.7131 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2646,7 +2693,7 @@
 	)
 	(text "MCU: Clock and Display control"
 		(exclude_from_sim no)
-		(at 138.43 60.96 0)
+		(at 138.43 72.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2656,7 +2703,7 @@
 	)
 	(text "Watch control"
 		(exclude_from_sim no)
-		(at 107.95 59.69 0)
+		(at 107.95 67.31 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2675,18 +2722,6 @@
 		(uuid "be77301f-edf8-4761-aea0-3e4d94b86444")
 	)
 	(junction
-		(at 153.67 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "56fc1a22-364c-448f-a43a-42c7bb08d83c")
-	)
-	(junction
-		(at 153.67 73.66)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7bac887f-1646-443b-b96d-8fcb1815a867")
-	)
-	(junction
 		(at 151.13 156.21)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2700,13 +2735,23 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 72.39) (xy 153.67 72.39)
+			(xy 162.56 88.9) (xy 162.56 90.17)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "242c91f3-7e01-4d24-85ec-5b298142f463")
+		(uuid "0acbc281-91e9-46f4-ae9a-8f8b66bc1173")
+	)
+	(wire
+		(pts
+			(xy 162.56 91.44) (xy 162.56 92.71)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5477c53a-6b73-49c1-8ec2-c9d25f91a56e")
 	)
 	(wire
 		(pts
@@ -2720,26 +2765,6 @@
 	)
 	(wire
 		(pts
-			(xy 153.67 72.39) (xy 153.67 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "77b0ae99-29a5-4919-ab26-9a67ab2c2380")
-	)
-	(wire
-		(pts
-			(xy 158.75 74.93) (xy 153.67 74.93)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "788a3067-c4dd-43b1-9881-09a024afb0ec")
-	)
-	(wire
-		(pts
 			(xy 167.64 130.81) (xy 166.37 130.81)
 		)
 		(stroke
@@ -2750,33 +2775,23 @@
 	)
 	(wire
 		(pts
-			(xy 153.67 74.93) (xy 153.67 76.2)
+			(xy 167.64 88.9) (xy 162.56 88.9)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "b58e22c0-4197-47c1-8da2-95962dd25a55")
+		(uuid "8ceaa5ec-0de3-474a-8b7c-f48aa2c8b7db")
 	)
 	(wire
 		(pts
-			(xy 153.67 76.2) (xy 154.94 76.2)
+			(xy 167.64 91.44) (xy 162.56 91.44)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "bc3dce1a-0cab-4a04-9f99-4b89e0684643")
-	)
-	(wire
-		(pts
-			(xy 153.67 73.66) (xy 154.94 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "de03cfea-d4e0-45d7-b871-9cda46f9ff89")
+		(uuid "e3573259-6cf7-4819-ae9d-d08f65157489")
 	)
 	(global_label "GND"
 		(shape bidirectional)
@@ -2799,30 +2814,9 @@
 			)
 		)
 	)
-	(global_label "VCC"
-		(shape bidirectional)
-		(at 138.43 66.04 90)
-		(effects
-			(font
-				(size 0.5 0.5)
-				(color 255 0 0 1)
-			)
-			(justify left)
-		)
-		(uuid "147586bb-3aef-4609-9279-3d1a75356500")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 138.43 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SELECT"
 		(shape output)
-		(at 116.84 73.66 0)
+		(at 116.84 81.28 0)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -2832,7 +2826,7 @@
 		)
 		(uuid "15c30971-a7fd-4f73-a245-bd876a277408")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.84 73.66 90)
+			(at 116.84 81.28 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2861,18 +2855,19 @@
 			)
 		)
 	)
-	(global_label "SCK"
-		(shape bidirectional)
-		(at 153.67 78.74 0)
+	(global_label "WAKE"
+		(shape input)
+		(at 162.56 90.17 0)
 		(effects
 			(font
 				(size 0.7 0.7)
+				(color 194 0 194 1)
 			)
 			(justify left)
 		)
-		(uuid "1db69721-d34a-49eb-98db-33f2928bdee3")
+		(uuid "1b6f097c-8310-4dcb-b503-2e1557a70710")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.67 78.74 0)
+			(at 162.56 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2965,19 +2960,39 @@
 			)
 		)
 	)
-	(global_label "WAKE"
-		(shape input)
-		(at 154.94 76.2 0)
+	(global_label "VCC"
+		(shape bidirectional)
+		(at 162.56 85.09 0)
 		(effects
 			(font
-				(size 0.7 0.7)
-				(color 194 0 194 1)
+				(size 0.5 0.5)
+				(color 255 0 0 1)
 			)
 			(justify left)
 		)
-		(uuid "384b2bd6-c403-4618-9953-912b3e809deb")
+		(uuid "396db18f-365d-4157-a937-27055f3fd895")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 154.94 76.2 0)
+			(at 162.56 85.09 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "SDA"
+		(shape output)
+		(at 162.56 92.71 0)
+		(effects
+			(font
+				(size 0.7 0.7)
+			)
+			(justify left)
+		)
+		(uuid "3dc02358-10e7-47ba-96b9-23b4ea288847")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 162.56 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2988,7 +3003,7 @@
 	)
 	(global_label "VCC"
 		(shape bidirectional)
-		(at 180.34 105.41 90)
+		(at 170.18 107.95 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -2998,7 +3013,7 @@
 		)
 		(uuid "40dacaf4-1814-426e-8615-2c2c67a1974b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 180.34 105.41 0)
+			(at 170.18 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3029,7 +3044,7 @@
 	)
 	(global_label "SCK"
 		(shape input)
-		(at 184.15 63.5 90)
+		(at 194.31 66.04 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3038,48 +3053,7 @@
 		)
 		(uuid "4f628fb4-6ec0-4b36-bb2b-a3f242a7da29")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 184.15 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SET"
-		(shape input)
-		(at 153.67 83.82 0)
-		(effects
-			(font
-				(size 0.7 0.7)
-				(color 204 102 0 1)
-			)
-			(justify left)
-		)
-		(uuid "4fe322f3-a096-4719-a5d2-7a87a14d9bb4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.67 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SDA"
-		(shape output)
-		(at 154.94 73.66 0)
-		(effects
-			(font
-				(size 0.7 0.7)
-			)
-			(justify left)
-		)
-		(uuid "5985fe8a-6a69-46f6-a288-51a10a3acf34")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 154.94 73.66 0)
+			(at 194.31 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3090,7 +3064,7 @@
 	)
 	(global_label "SET"
 		(shape output)
-		(at 116.84 78.74 0)
+		(at 116.84 86.36 0)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3100,7 +3074,7 @@
 		)
 		(uuid "5d8ae5f6-4037-4d06-a506-f5c015fa440b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.84 78.74 90)
+			(at 116.84 86.36 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3111,7 +3085,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 106.68 83.82 180)
+		(at 106.68 91.44 180)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3121,7 +3095,7 @@
 		)
 		(uuid "61ba33b2-43ba-44a6-8b37-26e597723cde")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.68 83.82 0)
+			(at 106.68 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3132,7 +3106,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 180.34 113.03 270)
+		(at 170.18 115.57 270)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3141,7 +3115,7 @@
 		)
 		(uuid "653ccb63-04dd-48bd-96bb-bf5d8e148fea")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 180.34 113.03 0)
+			(at 170.18 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3152,7 +3126,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 187.96 105.41 90)
+		(at 177.8 107.95 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3161,7 +3135,7 @@
 		)
 		(uuid "6d0559c5-ade4-40ab-9af9-8dcfbeb5ccc2")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 187.96 105.41 90)
+			(at 177.8 107.95 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3172,7 +3146,7 @@
 	)
 	(global_label "WAKE"
 		(shape output)
-		(at 116.84 68.58 0)
+		(at 116.84 76.2 0)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3182,28 +3156,7 @@
 		)
 		(uuid "6ea312e6-5b0f-40b7-84cd-e819ba376fec")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.84 68.58 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape bidirectional)
-		(at 138.43 96.52 270)
-		(effects
-			(font
-				(size 0.5 0.5)
-				(color 0 0 0 1)
-			)
-			(justify right)
-		)
-		(uuid "716d903e-0f7f-4707-9823-4545bb846c9d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 138.43 96.52 0)
+			(at 116.84 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3234,7 +3187,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 179.07 63.5 90)
+		(at 189.23 66.04 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3244,7 +3197,7 @@
 		)
 		(uuid "799886b6-83b5-4217-a279-702196fcb6f3")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 179.07 63.5 0)
+			(at 189.23 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3275,7 +3228,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 106.68 78.74 180)
+		(at 106.68 86.36 180)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3285,7 +3238,7 @@
 		)
 		(uuid "7d2705e8-6bff-4275-b013-fa4b12dbf101")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.68 78.74 0)
+			(at 106.68 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3296,7 +3249,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 106.68 73.66 180)
+		(at 106.68 81.28 180)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3306,7 +3259,7 @@
 		)
 		(uuid "81085b46-5dee-40ab-a0d9-e128cef8af73")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.68 73.66 0)
+			(at 106.68 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3358,7 +3311,7 @@
 	)
 	(global_label "MOSI"
 		(shape bidirectional)
-		(at 158.75 72.39 0)
+		(at 167.64 91.44 0)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3367,7 +3320,7 @@
 		)
 		(uuid "954d48ef-9047-414c-b548-daddedc38078")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 158.75 72.39 0)
+			(at 167.64 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3396,9 +3349,30 @@
 			)
 		)
 	)
+	(global_label "SELECT"
+		(shape input)
+		(at 130.81 87.63 180)
+		(effects
+			(font
+				(size 0.7 0.7)
+				(color 0 132 0 1)
+			)
+			(justify right)
+		)
+		(uuid "a8d7b7c6-20a4-498f-9618-a3a6d35b9693")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 130.81 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 106.68 68.58 180)
+		(at 106.68 76.2 180)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3408,7 +3382,7 @@
 		)
 		(uuid "aadd633e-cea5-41cb-91d5-c7d1c2c80cc5")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.68 68.58 0)
+			(at 106.68 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3419,7 +3393,7 @@
 	)
 	(global_label "RESET"
 		(shape output)
-		(at 116.84 83.82 0)
+		(at 116.84 91.44 0)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3428,7 +3402,7 @@
 		)
 		(uuid "ae4c9795-505e-464c-a5e3-b8b1218af2c7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 116.84 83.82 0)
+			(at 116.84 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3469,27 +3443,6 @@
 		(uuid "b2396613-c3d2-4006-b7e5-8238b1343eff")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 137.276 116.2277 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SELECT"
-		(shape input)
-		(at 153.67 81.28 0)
-		(effects
-			(font
-				(size 0.7 0.7)
-				(color 0 132 0 1)
-			)
-			(justify left)
-		)
-		(uuid "b2c657db-f9a2-42db-98ea-33f900cc8242")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.67 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3581,9 +3534,29 @@
 			)
 		)
 	)
+	(global_label "SCK"
+		(shape bidirectional)
+		(at 162.56 87.63 0)
+		(effects
+			(font
+				(size 0.7 0.7)
+			)
+			(justify left)
+		)
+		(uuid "bd074005-a17f-4864-b762-1eef4ae8f197")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 162.56 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "VCC"
 		(shape bidirectional)
-		(at 190.5 105.41 90)
+		(at 180.34 107.95 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3593,7 +3566,7 @@
 		)
 		(uuid "c12835a6-7284-49f4-aef4-85795c0c7ba1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 190.5 105.41 90)
+			(at 180.34 107.95 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3624,16 +3597,16 @@
 	)
 	(global_label "MISO"
 		(shape bidirectional)
-		(at 158.75 74.93 0)
+		(at 167.64 88.9 0)
 		(effects
 			(font
 				(size 0.7 0.7)
 			)
 			(justify left)
 		)
-		(uuid "d723e22d-b662-4914-98ba-c0735831c154")
+		(uuid "cc08e7fe-aa5c-4717-b073-141d601a3544")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 158.75 74.93 0)
+			(at 167.64 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3642,19 +3615,19 @@
 			)
 		)
 	)
-	(global_label "VCC"
+	(global_label "GND"
 		(shape bidirectional)
-		(at 181.61 63.5 90)
+		(at 130.81 92.71 180)
 		(effects
 			(font
-				(size 0.7 0.7)
-				(color 255 0 0 1)
+				(size 0.5 0.5)
+				(color 0 0 0 1)
 			)
-			(justify left)
+			(justify right)
 		)
-		(uuid "e68e1b29-c54e-4059-925e-448977ee1f45")
+		(uuid "dcd95f21-3f1b-4b8c-9d80-d42517e0223a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 181.61 63.5 0)
+			(at 130.81 92.71 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3665,16 +3638,58 @@
 	)
 	(global_label "RESET"
 		(shape input)
-		(at 153.67 86.36 0)
+		(at 130.81 85.09 180)
 		(effects
 			(font
 				(size 0.7 0.7)
 			)
+			(justify right)
+		)
+		(uuid "dd84e5fe-f88e-4662-9899-572c78799370")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 130.81 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "SET"
+		(shape input)
+		(at 130.81 90.17 180)
+		(effects
+			(font
+				(size 0.7 0.7)
+				(color 204 102 0 1)
+			)
+			(justify right)
+		)
+		(uuid "e2fbd079-095f-47ad-a12f-9afd140881ef")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 130.81 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VCC"
+		(shape bidirectional)
+		(at 191.77 66.04 90)
+		(effects
+			(font
+				(size 0.7 0.7)
+				(color 255 0 0 1)
+			)
 			(justify left)
 		)
-		(uuid "f7b759de-86ca-49da-a9f4-335daae06841")
+		(uuid "e68e1b29-c54e-4059-925e-448977ee1f45")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.67 86.36 0)
+			(at 191.77 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3705,7 +3720,7 @@
 	)
 	(global_label "SDA"
 		(shape input)
-		(at 186.69 63.5 90)
+		(at 196.85 66.04 90)
 		(effects
 			(font
 				(size 0.7 0.7)
@@ -3714,7 +3729,7 @@
 		)
 		(uuid "fed1c2e2-c024-4916-a07c-f7d861339f1d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 186.69 63.5 0)
+			(at 196.85 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3745,7 +3760,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Omron_B3FS")
-		(at 111.76 83.82 0)
+		(at 111.76 91.44 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3753,7 +3768,7 @@
 		(dnp no)
 		(uuid "00517f61-2809-4632-9fd4-deffbeae6e02")
 		(property "Reference" "RST1"
-			(at 111.76 80.264 0)
+			(at 111.76 87.884 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -3761,7 +3776,7 @@
 			)
 		)
 		(property "Value" "RST"
-			(at 111.76 81.534 0)
+			(at 111.76 89.154 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -3769,7 +3784,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS"
-			(at 111.76 78.74 0)
+			(at 111.76 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3778,7 +3793,7 @@
 			)
 		)
 		(property "Datasheet" "https://omronfs.omron.com/en_US/ecb/products/pdf/en-b3fs.pdf"
-			(at 111.76 78.74 0)
+			(at 111.76 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3787,7 +3802,25 @@
 			)
 		)
 		(property "Description" "Omron B3FS 6x6mm single pole normally-open tactile switch"
-			(at 111.76 83.82 0)
+			(at 111.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2689642"
+			(at 111.76 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MFR part" "PTS636SK25SMTRLFS"
+			(at 111.76 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3854,6 +3887,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 170.18 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2930296"
 			(at 170.18 146.05 0)
 			(effects
 				(font
@@ -3932,6 +3974,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C265405"
+			(at 132.196 108.6077 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0c0e7543-0fde-4b7c-80de-44cc8f7df861")
 		)
@@ -3966,97 +4017,8 @@
 		)
 	)
 	(symbol
-		(lib_id "MCU_Microchip_ATtiny:ATtiny85-20P")
-		(at 138.43 81.28 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "264f9c4b-8359-4e07-9b3c-2065eb394d04")
-		(property "Reference" "ATTINY1"
-			(at 130.048 82.296 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "ATTINY85"
-			(at 135.636 85.598 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Package_DIP:DIP-8_W7.62mm_SMDSocket_SmallPads"
-			(at 138.43 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microcontroller-attiny25-attiny45-attiny85_datasheet.pdf"
-			(at 138.43 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "20MHz, 8kB Flash, 512B SRAM, 512B EEPROM, debugWIRE, DIP-8"
-			(at 138.43 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "6"
-			(uuid "4c1726b9-f185-4995-8306-161c060dec4a")
-		)
-		(pin "7"
-			(uuid "d71c9cdd-32a1-4b50-a116-6f09db87f9b6")
-		)
-		(pin "8"
-			(uuid "6c58b4cd-8d4f-4993-99b1-82bd89ad3928")
-		)
-		(pin "4"
-			(uuid "eb6c0ede-38f4-466c-baee-14d94e06d14b")
-		)
-		(pin "5"
-			(uuid "77fab38a-390f-4ab8-9fe3-dc93c8941a6b")
-		)
-		(pin "2"
-			(uuid "4ff636df-d980-471f-9d36-1f5078780a26")
-		)
-		(pin "3"
-			(uuid "2765f3ea-6cb1-442c-878b-4ea1ba0caa3b")
-		)
-		(pin "1"
-			(uuid "1ee5dbef-50ca-4c50-a794-beca54be4334")
-		)
-		(instances
-			(project ""
-				(path "/552443dc-5cb6-43cc-861c-1c1d9f5bdc51"
-					(reference "ATTINY1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Switch:SW_Omron_B3FS")
-		(at 111.76 78.74 0)
+		(at 111.76 86.36 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4064,7 +4026,7 @@
 		(dnp no)
 		(uuid "26c3a59d-50c8-46ff-b992-89e1775cde16")
 		(property "Reference" "SET1"
-			(at 111.76 75.438 0)
+			(at 111.76 83.058 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4072,7 +4034,7 @@
 			)
 		)
 		(property "Value" "SET"
-			(at 111.76 76.708 0)
+			(at 111.76 84.328 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4080,7 +4042,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS"
-			(at 111.76 73.66 0)
+			(at 111.76 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4089,7 +4051,7 @@
 			)
 		)
 		(property "Datasheet" "https://omronfs.omron.com/en_US/ecb/products/pdf/en-b3fs.pdf"
-			(at 111.76 73.66 0)
+			(at 111.76 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4098,7 +4060,25 @@
 			)
 		)
 		(property "Description" "Omron B3FS 6x6mm single pole normally-open tactile switch"
-			(at 111.76 78.74 0)
+			(at 111.76 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2689642"
+			(at 111.76 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MFR part" "PTS636SK25SMTRLFS"
+			(at 111.76 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4188,7 +4168,7 @@
 	)
 	(symbol
 		(lib_id "JST_PH_1x02_2mm_horizontal:S2B-PH-SM4-TB_LF__SN_")
-		(at 189.23 110.49 270)
+		(at 179.07 113.03 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4196,7 +4176,7 @@
 		(dnp no)
 		(uuid "3a3d5e21-0beb-4225-a447-18ed0ad15e7c")
 		(property "Reference" "P1"
-			(at 192.532 106.172 90)
+			(at 182.372 108.712 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4205,7 +4185,7 @@
 			)
 		)
 		(property "Value" "LIPO B2"
-			(at 185.166 116.84 90)
+			(at 175.006 119.38 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4214,7 +4194,7 @@
 			)
 		)
 		(property "Footprint" "JST_PH_1x02_2mm_horizontal:JST_PH_1x02_2mm_horizontal"
-			(at 193.548 119.888 0)
+			(at 183.388 122.428 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4224,7 +4204,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 189.23 110.49 0)
+			(at 179.07 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4233,7 +4213,16 @@
 			)
 		)
 		(property "Description" "JST_1x02_SMD_2mm_horizontal"
-			(at 189.23 110.49 0)
+			(at 179.07 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C295747"
+			(at 179.07 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4310,6 +4299,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C380343"
+			(at 111.76 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "206479b4-e363-4388-a838-282926ca7ce9")
 		)
@@ -4327,7 +4325,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 105.2888 107.5459 0)
+		(at 104.6366 116.629 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -4336,7 +4334,7 @@
 		(fields_autoplaced yes)
 		(uuid "4a7755bb-833e-4c73-a767-1bf46f91de3c")
 		(property "Reference" "H2"
-			(at 107.8288 107.5458 0)
+			(at 107.1766 116.6289 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4345,7 +4343,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 107.8288 108.8158 0)
+			(at 107.1766 117.8989 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4355,7 +4353,7 @@
 			)
 		)
 		(property "Footprint" "My_Footprints:Circular_Mounting_Hole_1mmDia"
-			(at 105.2888 107.5459 0)
+			(at 104.6366 116.629 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4364,7 +4362,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 105.2888 107.5459 0)
+			(at 104.6366 116.629 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4373,7 +4371,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 105.2888 107.5459 0)
+			(at 104.6366 116.629 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4392,7 +4390,7 @@
 	)
 	(symbol
 		(lib_id "My_Symbols:SSD1306_OLED_Display_128x64")
-		(at 182.88 64.77 0)
+		(at 193.04 67.31 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -4401,7 +4399,7 @@
 		(dnp no)
 		(uuid "61ed5026-7a96-437d-a4fa-55df27860755")
 		(property "Reference" "OLED_DISPLAY1"
-			(at 195.072 68.834 0)
+			(at 205.232 71.374 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4410,7 +4408,7 @@
 			)
 		)
 		(property "Value" "OLED DISPLAY"
-			(at 197.358 85.344 0)
+			(at 207.518 87.884 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4419,7 +4417,7 @@
 			)
 		)
 		(property "Footprint" "My_Footprints:SSD1306_OLED_Display_128x64"
-			(at 182.88 64.77 0)
+			(at 193.04 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4428,7 +4426,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 180.975 67.945 90)
+			(at 191.135 70.485 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4437,7 +4435,7 @@
 			)
 		)
 		(property "Description" "SSD1306 OLED Display with pins"
-			(at 181.864 56.134 0)
+			(at 192.024 58.674 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4518,6 +4516,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C2907329"
+			(at 128.27 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "d30a0960-cae4-448d-b317-15ca17c32656")
 		)
@@ -4535,7 +4542,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Omron_B3FS")
-		(at 111.76 73.66 0)
+		(at 111.76 81.28 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4543,7 +4550,7 @@
 		(dnp no)
 		(uuid "735b9504-f54c-4e01-af35-3e27f4a8f116")
 		(property "Reference" "SEL1"
-			(at 111.506 69.85 0)
+			(at 111.506 77.47 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4551,7 +4558,7 @@
 			)
 		)
 		(property "Value" "SEL"
-			(at 111.506 71.12 0)
+			(at 111.506 78.74 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4559,7 +4566,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS"
-			(at 111.76 68.58 0)
+			(at 111.76 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4568,7 +4575,7 @@
 			)
 		)
 		(property "Datasheet" "https://omronfs.omron.com/en_US/ecb/products/pdf/en-b3fs.pdf"
-			(at 111.76 68.58 0)
+			(at 111.76 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4577,7 +4584,25 @@
 			)
 		)
 		(property "Description" "Omron B3FS 6x6mm single pole normally-open tactile switch"
-			(at 111.76 73.66 0)
+			(at 111.76 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2689642"
+			(at 111.76 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MFR part" "PTS636SK25SMTRLFS"
+			(at 111.76 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4602,7 +4627,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 113.6822 93.7869 0)
+		(at 113.03 102.87 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -4611,7 +4636,7 @@
 		(fields_autoplaced yes)
 		(uuid "735e4b6e-f338-40e1-bf5d-d7d8986d3c93")
 		(property "Reference" "H3"
-			(at 116.2222 93.7868 0)
+			(at 115.57 102.8699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4620,7 +4645,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 116.2222 95.0568 0)
+			(at 115.57 104.1399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4630,7 +4655,7 @@
 			)
 		)
 		(property "Footprint" "My_Footprints:Circular_Mounting_Hole_1mmDia"
-			(at 113.6822 93.7869 0)
+			(at 113.03 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4639,7 +4664,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 113.6822 93.7869 0)
+			(at 113.03 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4648,7 +4673,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 113.6822 93.7869 0)
+			(at 113.03 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4667,7 +4692,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Omron_B3FS")
-		(at 111.76 68.58 0)
+		(at 111.76 76.2 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4675,7 +4700,7 @@
 		(dnp no)
 		(uuid "74516425-c2a7-4e8c-b552-225b603ccfce")
 		(property "Reference" "WK1"
-			(at 111.76 64.77 0)
+			(at 111.76 72.39 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4683,7 +4708,7 @@
 			)
 		)
 		(property "Value" "WK"
-			(at 111.76 66.294 0)
+			(at 111.76 73.914 0)
 			(effects
 				(font
 					(size 0.7 0.7)
@@ -4691,7 +4716,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS"
-			(at 111.76 63.5 0)
+			(at 111.76 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4699,8 +4724,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "https://omronfs.omron.com/en_US/ecb/products/pdf/en-b3fs.pdf"
-			(at 111.76 63.5 0)
+		(property "Datasheet" "https://www.lcsc.com/product-detail/C2689642.html?s_z=n_PTS636S"
+			(at 111.76 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4708,8 +4733,26 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Omron B3FS 6x6mm single pole normally-open tactile switch"
-			(at 111.76 68.58 0)
+		(property "Description" "C&K tactile switch"
+			(at 111.76 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2689642"
+			(at 111.76 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MFR part" "PTS636SK25SMTRLFS"
+			(at 111.76 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4786,6 +4829,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C380343"
+			(at 115.57 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "bd4edf90-304a-416f-914a-6c7ead5a3609")
 		)
@@ -4849,6 +4901,15 @@
 			)
 		)
 		(property "Description" "Single cell, Li-Ion/Li-Po charge management controller, 4.20V, Tri-State Status Output, in SOT23-5 package"
+			(at 118.11 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C424093"
 			(at 118.11 140.97 0)
 			(effects
 				(font
@@ -4933,6 +4994,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C2907338"
+			(at 107.95 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "c0f891d0-a181-4a3e-be1f-a7668e356349")
 		)
@@ -4943,6 +5013,103 @@
 			(project "watch"
 				(path "/552443dc-5cb6-43cc-861c-1c1d9f5bdc51"
 					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "My_Symbols:ATTINY85-20SUR")
+		(at -50.8 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a878652f-77db-423f-b065-ae24b8c3ae4f")
+		(property "Reference" "U2"
+			(at 146.812 75.692 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "ATTINY85-20SUR"
+			(at 146.812 78.232 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "My_ATTINY:8S2_ATM-L"
+			(at 130.81 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "ATTINY85-20SUR"
+			(at -50.8 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at -50.8 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C31540447"
+			(at -50.8 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7a700966-0be9-4073-868b-791078d0d277")
+		)
+		(pin "2"
+			(uuid "e65b5a82-1b24-4ca2-bcce-bf8791c8590f")
+		)
+		(pin "3"
+			(uuid "b689c44e-59df-4419-9ef2-5d984a6cd757")
+		)
+		(pin "4"
+			(uuid "5eaa8426-5138-4e8f-a592-5fd9263eb08b")
+		)
+		(pin "8"
+			(uuid "9d86cb11-86ee-4827-b6a9-eaabf357bf1b")
+		)
+		(pin "7"
+			(uuid "107b8c9c-a089-42ab-b897-ae97720ce941")
+		)
+		(pin "6"
+			(uuid "4fc5b7d6-9ecf-41e7-a0ca-e72479552501")
+		)
+		(pin "5"
+			(uuid "ea9d22de-7908-465f-8555-fd9394a540aa")
+		)
+		(instances
+			(project ""
+				(path "/552443dc-5cb6-43cc-861c-1c1d9f5bdc51"
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -5011,6 +5178,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C19171391"
+			(at 130.81 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e7d1b5f2-948f-47db-9b32-411fcf44d353")
 		)
@@ -5028,7 +5204,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 105.2888 93.5759 0)
+		(at 104.6366 102.659 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -5037,7 +5213,7 @@
 		(fields_autoplaced yes)
 		(uuid "b78aafed-d768-42f5-8696-a6f4aa64f9b8")
 		(property "Reference" "H1"
-			(at 107.8288 93.5758 0)
+			(at 107.1766 102.6589 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5046,7 +5222,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 107.8288 94.8458 0)
+			(at 107.1766 103.9289 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5056,7 +5232,7 @@
 			)
 		)
 		(property "Footprint" "My_Footprints:Circular_Mounting_Hole_1mmDia"
-			(at 105.2888 93.5759 0)
+			(at 104.6366 102.659 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5065,7 +5241,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 105.2888 93.5759 0)
+			(at 104.6366 102.659 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5074,7 +5250,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 105.2888 93.5759 0)
+			(at 104.6366 102.659 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5093,7 +5269,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 113.6822 107.7569 0)
+		(at 113.03 116.84 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -5102,7 +5278,7 @@
 		(fields_autoplaced yes)
 		(uuid "b9149d50-702e-415a-91ee-af81daa01041")
 		(property "Reference" "H4"
-			(at 116.2222 107.7568 0)
+			(at 115.57 116.8399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5111,7 +5287,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 116.2222 109.0268 0)
+			(at 115.57 118.1099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5121,7 +5297,7 @@
 			)
 		)
 		(property "Footprint" "My_Footprints:Circular_Mounting_Hole_1mmDia"
-			(at 113.6822 107.7569 0)
+			(at 113.03 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5130,7 +5306,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 113.6822 107.7569 0)
+			(at 113.03 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5139,7 +5315,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 113.6822 107.7569 0)
+			(at 113.03 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5208,6 +5384,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C2930296"
+			(at 170.18 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "36d35010-3749-4cff-8594-7ade0ec27418")
 		)
@@ -5267,6 +5452,15 @@
 			)
 		)
 		(property "Description" "USB Power-Only 6P Type-C Receptacle connector"
+			(at 151.13 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C7507406"
 			(at 151.13 138.43 0)
 			(effects
 				(font
@@ -5374,7 +5568,7 @@
 	)
 	(symbol
 		(lib_id "Device:Battery_Cell")
-		(at 180.34 110.49 0)
+		(at 170.18 113.03 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5382,7 +5576,7 @@
 		(dnp no)
 		(uuid "fa5f4a11-dd04-4796-8dc3-f3e81b1fcf9d")
 		(property "Reference" "BT1"
-			(at 166.878 104.14 0)
+			(at 156.718 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5391,7 +5585,7 @@
 			)
 		)
 		(property "Value" "BT1"
-			(at 166.878 106.68 0)
+			(at 156.718 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5400,7 +5594,7 @@
 			)
 		)
 		(property "Footprint" "Battery:BatteryHolder_Keystone_1060_1x2032"
-			(at 180.34 108.966 90)
+			(at 170.18 111.506 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5409,7 +5603,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 180.34 108.966 90)
+			(at 170.18 111.506 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5418,7 +5612,16 @@
 			)
 		)
 		(property "Description" "Single-cell battery"
-			(at 180.34 110.49 0)
+			(at 170.18 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C238069"
+			(at 170.18 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
