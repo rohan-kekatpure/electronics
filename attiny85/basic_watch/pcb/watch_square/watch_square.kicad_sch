@@ -3983,6 +3983,24 @@
 				(hide yes)
 			)
 		)
+		(property "Rotation Offset" "180"
+			(at 132.196 108.6077 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Position Offset" "0,-2.9845"
+			(at 132.196 108.6077 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0c0e7543-0fde-4b7c-80de-44cc8f7df861")
 		)
@@ -4230,6 +4248,24 @@
 				(hide yes)
 			)
 		)
+		(property "Rotation Offset" "180"
+			(at 179.07 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Position Offset" "0,2.8575"
+			(at 179.07 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8288c324-b64e-44ee-bd40-c7b106d2e8df")
 		)
@@ -4330,7 +4366,7 @@
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "4a7755bb-833e-4c73-a767-1bf46f91de3c")
 		(property "Reference" "H2"
@@ -4379,6 +4415,14 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" ""
+			(at 104.6366 116.629 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(instances
 			(project "watch"
 				(path "/552443dc-5cb6-43cc-861c-1c1d9f5bdc51"
@@ -4391,15 +4435,14 @@
 	(symbol
 		(lib_id "My_Symbols:SSD1306_OLED_Display_128x64")
 		(at 193.04 67.31 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "61ed5026-7a96-437d-a4fa-55df27860755")
 		(property "Reference" "OLED_DISPLAY1"
-			(at 205.232 71.374 0)
+			(at 178.054 82.042 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4408,12 +4451,13 @@
 			)
 		)
 		(property "Value" "OLED DISPLAY"
-			(at 207.518 87.884 0)
+			(at 181.102 88.646 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
 			)
 		)
 		(property "Footprint" "My_Footprints:SSD1306_OLED_Display_128x64"
@@ -4426,7 +4470,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 191.135 70.485 90)
+			(at 194.945 70.485 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4435,12 +4479,20 @@
 			)
 		)
 		(property "Description" "SSD1306 OLED Display with pins"
-			(at 192.024 58.674 0)
+			(at 194.056 58.674 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 193.04 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 			)
 		)
 		(pin "2"
@@ -4632,7 +4684,7 @@
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "735e4b6e-f338-40e1-bf5d-d7d8986d3c93")
 		(property "Reference" "H3"
@@ -4679,6 +4731,14 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 113.03 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 			)
 		)
 		(instances
@@ -4918,6 +4978,15 @@
 				(hide yes)
 			)
 		)
+		(property "Rotation Offset" "-90"
+			(at 118.11 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "5a3a6922-7af9-4f34-9b63-2c24b28fc845")
 		)
@@ -4994,7 +5063,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2907338"
+		(property "LCSC" "C17772"
 			(at 107.95 147.32 0)
 			(effects
 				(font
@@ -5074,6 +5143,15 @@
 			)
 		)
 		(property "LCSC" "C31540447"
+			(at -50.8 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Rotation Offset" "-90"
 			(at -50.8 85.09 0)
 			(effects
 				(font
@@ -5209,7 +5287,7 @@
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "b78aafed-d768-42f5-8696-a6f4aa64f9b8")
 		(property "Reference" "H1"
@@ -5258,6 +5336,14 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" ""
+			(at 104.6366 102.659 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(instances
 			(project ""
 				(path "/552443dc-5cb6-43cc-861c-1c1d9f5bdc51"
@@ -5274,7 +5360,7 @@
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "b9149d50-702e-415a-91ee-af81daa01041")
 		(property "Reference" "H4"
@@ -5321,6 +5407,14 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 113.03 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 			)
 		)
 		(instances
@@ -5469,6 +5563,15 @@
 				(hide yes)
 			)
 		)
+		(property "Position Offset" "0,1.143"
+			(at 151.13 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "A5"
 			(uuid "73ef83c4-33a2-4494-9b4c-f0f9e99f405d")
 		)
@@ -5591,6 +5694,7 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
 			)
 		)
 		(property "Footprint" "Battery:BatteryHolder_Keystone_1060_1x2032"
@@ -5621,6 +5725,15 @@
 			)
 		)
 		(property "LCSC" "C238069"
+			(at 170.18 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Rotation Offset" "-90"
 			(at 170.18 113.03 0)
 			(effects
 				(font
