@@ -177,6 +177,19 @@ void MotionControl::rightIndicatorOff() {
   digitalWrite(pins.RIGHT_INDICATOR, LOW);
 }  
 
+void MotionControl::policeStop() {    
+  for(int i = 0; i < 10; ++i) {
+    leftIndicatorOn();
+    delay(200);
+    leftIndicatorOff();
+    rightIndicatorOn();
+    delay(200);
+    rightIndicatorOff();
+    decrSpeed();
+  }
+  stop();
+}
+
 void MotionControl::turnLeft(unsigned delayms) {
   leftIndicatorOn();
   leftReverse();

@@ -102,6 +102,7 @@ class MotionControl {
     void rightIndicatorOff();
     void leftUTurn();
     void rightUTurn();
+    void policeStop();    
 
     // Executing Moves
     void execMove(const Move& move);

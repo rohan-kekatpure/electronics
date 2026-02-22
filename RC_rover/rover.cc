@@ -83,6 +83,11 @@ void Rover::stop() {
   addMoveStop();
 }
 
+void Rover::policeStop() {
+  trip.endLastMove();
+  motionControl.policeStop();
+}
+
 void Rover::listen() {  
   uint64_t irCode = irSensor.listen();  
   if (irCode == 0) {
@@ -220,7 +225,7 @@ void Rover::listen() {
     case IRCODES::LG_BTN_POWER:
     case IRCODES::ELEGOO_BTN_HASH:
       Serial.println(IRCODES::LG_BTN_POWER, HEX);
-      stop();
+      policeStop();
       break;
 
     default:

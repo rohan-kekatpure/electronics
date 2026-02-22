@@ -35,6 +35,6 @@ class Rover {
   void turnLeft();
   void turnRight();
   void stop();
-
+  void policeStop();
 };
 #endif

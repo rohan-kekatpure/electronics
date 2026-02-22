@@ -14,7 +14,7 @@ volatile uint8_t SETTER_DEBOUNCE = 0;
 const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
 const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
-char MSG[9] = "CYPRESS ";
+char MSG[9] = "Hari.Uma";
 
 // Date and time structure
 struct DateTime {
@@ -266,13 +266,20 @@ void processMsg() {
   }
   uint8_t idx = SELECTOR - 8;
   char c = MSG[idx];
-  
-  if (c == 'Z') {
+
+  if (c != '.' && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') && (c < '0' || c > '9')) {
+    c = '.';
+  }
+
+  // Cycle: space → A..Z → a..z → 0..9 → space (only these characters possible)
+  if (c == '.') {
+    c = 'A';
+  } else if (c == 'Z') {
+    c = 'a';
+  } else if (c == 'z') {
     c = '0';
   } else if (c == '9') {
-    c = ' ';
-  } else if (c == ' ') {
-    c = 'A';    
+    c = '.';
   } else {
     c++;
   }
