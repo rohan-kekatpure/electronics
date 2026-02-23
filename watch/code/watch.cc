@@ -3,6 +3,8 @@
 #include <avr/sleep.h>
 #include <TinyWireM.h>
 #include <Tiny4kOLED.h>
+#include "font16x32digits.h"
+#include "font11x16.h"
 
 // Interrupt flags
 volatile uint8_t TICKFLAG = 0;
@@ -317,7 +319,9 @@ void updateDisplay() {
 
   // Display time
   oled.setCursor(8, 10);
-  oled.setFont(FONT8X16);
+  // oled.setFont(FONT8X16);
+  // oled.setFont(FONT16X32DIGITS);
+  oled.setFont(FONT11X16);
   oled.print(timebuf);
 
   // Display Weekday
@@ -341,92 +345,6 @@ void updateDisplay() {
   oled.setFont(FONT6X8);
   oled.setCursor(8, 47);
   oled.print(MSG);
-
-  // Extra graphics 
-  graphic();
-}
-
-void drawPixel(int8_t x, int8_t y) {
-  /*
-    Primitive for drawing a single pixel; will
-    be used by all other graphics functions 
-  */
-  if (x < 0 || x >= 128 || y < 0 || y >= 64) {
-    return;
-  };
-  
-  uint8_t page = y >> 3;  // Convert pixel Y to page
-  uint8_t bit = y & 0x07;  // Bit position within page
-  
-  oled.setCursor(x, page);
-  oled.startData();   
-  oled.sendData(1 << bit);  
-  oled.endData();  
-}
-
-void drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1) {
-  /*
-    Bresenham's Line Algorithm ; uses only integer arithmetic.
-  */
-  int8_t dx = x1 - x0;
-  int8_t dy = y1 - y0;
-  
-  if (dx < 0) {
-    dx = -dx;
-  }
-  if (dy < 0) {
-    dy = -dy;
-  }
-
-  int8_t sx = (x0 < x1) ? 1 : -1;
-  int8_t sy = (y0 < y1) ? 1 : -1;
-  
-  int8_t err = dx - dy;
-  
-  while (1) {
-    drawPixel(x0, y0);
-    
-    if (x0 == x1 && y0 == y1) break;
-    
-    int8_t e2 = err << 1;
-    
-    if (e2 > -dy) {
-      err -= dy;
-      x0 += sx;
-    }
-    
-    if (e2 < dx) {
-      err += dx;
-      y0 += sy;
-    }
-  }
-}
-
-// Draw a diamond outline (45-degree rotated square)
-void drawDiamond(int cx, int cy, int size) {
-  int half = size >> 1;  
-  
-  // Draw four edges of diamond
-  for (int i = 0; i <= half; i++) {
-    drawPixel(cx - i, cy - half + i);
-    drawPixel(cx + i, cy - half + i);
-    drawPixel(cx - i, cy + half - i);
-    drawPixel(cx + i, cy + half - i);
-  }
-}
-
-void graphic() {
-  int cx = 95;   // Center x (adjust as needed)
-  int cy = 32;   // Center y (adjust as needed)
-  int size = 30; // Size of shape (adjust as needed)
- 
-  if (DATETIME.sec & 1) {
-    drawDiamond(cx, cy, 20);
-    drawDiamond(cx, cy, 30);
-  } else {
-    drawDiamond(cx, cy, 30);
-    drawDiamond(cx, cy, 40);
-  }
 }
 
 void setupLowPower() {
