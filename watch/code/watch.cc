@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <avr/eeprom.h>
 #include <TinyWireM.h>
 #include <Tiny4kOLED.h>
 #include "font16x32digits.h"
@@ -16,7 +17,14 @@ volatile uint8_t SETTER_DEBOUNCE = 0;
 const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
 const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
-char MSG[9] = "Hari.Uma";
+char MSG[9] = "CYPRESS.";
+//uint8_t BATTERY_VAL = 0;
+unsigned int VCC_MILLIVOLTS = 0;
+
+// EEPROM Addresses
+const uint8_t* EEPROM_SIG_ADDR = 0;
+const uint8_t* EEPROM_DATA_ADDR = 1;
+const uint8_t EEPROM_SIG_VALUE = 0x42;
 
 // Date and time structure
 struct DateTime {
@@ -39,8 +47,9 @@ struct DateTime {
     }
   }
 
-  void tick() {
+  bool tick() {
     // Increment seconds and cascade through time units
+    bool hourPassed = false;
     if (++sec == 60) {
       sec = 0;
       min++;
@@ -49,6 +58,7 @@ struct DateTime {
     if (min == 60) {
       hour++;
       min = 0;
+      hourPassed = true;
     }
 
     if (hour == 24) {
@@ -70,10 +80,11 @@ struct DateTime {
       year++;
       month = 1;
     }
+    return hourPassed;
   }
 };
 
-DateTime DATETIME = {25, 11, 23, 19, 49, 0};
+DateTime DATETIME = {25, 12, 31, 23, 59, 50};
 
 // Display state with auto-timeout
 struct TimedDisplayState {
@@ -154,8 +165,8 @@ void selectField() {
     case 1: cx = 26; cy = 9; flen = 12; break;  // Day
     case 2: cx = 44; cy = 9; flen = 24; break;  // Year
     case 3: cx = 9;  cy = Y2; flen = 16; break;  // Hour
-    case 4: cx = 32; cy = Y2; flen = 16; break;  // Minute
-    case 5: cx = 55; cy = Y2; flen = 16; break;  // Second
+    case 4: cx = 42; cy = Y2; flen = 16; break;  // Minute
+    case 5: cx = 75; cy = Y2; flen = 16; break;  // Second
     case 6: cx = 9; cy = 30; flen = 18; break; // weekday
     case 7: cx = 60; cy = 30; flen = 18; break; // OSCCAL value
     case 8: cx = 8; cy = 47; flen = 6; break;
@@ -345,6 +356,11 @@ void updateDisplay() {
   oled.setFont(FONT6X8);
   oled.setCursor(8, 47);
   oled.print(MSG);
+
+  /* Display battery millivolts */
+  oled.setCursor(60, 47);
+  oled.print("BAT:");
+  oled.print(VCC_MILLIVOLTS);
 }
 
 void setupLowPower() {
@@ -355,16 +371,71 @@ void setupLowPower() {
   sleep_enable();                       // Enable sleep
 }
 
+void saveState() {
+  // write signature byte
+  eeprom_update_byte(EEPROM_SIG_ADDR, EEPROM_SIG_VALUE);
+  // write state block
+  eeprom_update_block((const void*)&DATETIME, (void*)EEPROM_DATA_ADDR, sizeof(DATETIME));
+}
+
+void loadState() {
+    uint8_t sign = eeprom_read_byte((uint8_t*)EEPROM_SIG_ADDR);
+    // Only load if the signature matches
+    if (sign == EEPROM_SIG_VALUE) {
+        eeprom_read_block(
+          (void*)&DATETIME, 
+          (const void*)EEPROM_DATA_ADDR, 
+          sizeof(DATETIME)
+        );
+    }
+}
+
+void readVcc() {
+  /*
+    Primitive battery status code; simply reports the supply voltage.
+    Since a discharging battery loses its voltage, a reduction in supply
+    voltage is equivalent to battery discharge. Supply voltage of a 
+    new CR2032 battery is about 3.3 volts. A reading near 2.9 indicates 
+    a low battery. 
+
+    We have powered down the ADC to save battery. So we enable the ADC, 
+    take the reading and disable the ADC again.
+  */
+
+  // 1. Power up the ADC
+  PRR &= ~(1 << PRADC);    // Power Reduction Register: Disable ADC power-down
+  ADCSRA |= (1 << ADEN);   // Enable the ADC
+  
+  // 2. Configure for Internal 1.1V measurement
+  #if defined(__AVR_ATtiny85__)
+    ADMUX = _BV(MUX3) | _BV(MUX2);
+  #endif
+
+  // 3. Short delay for the reference voltage to stabilize
+  for (volatile uint16_t i = 0; i < 250; i++); 
+
+  // 4. Take the measurement
+  ADCSRA |= _BV(ADSC); // Start conversion
+  while (bit_is_set(ADCSRA, ADSC)); 
+
+  // 5. Calculate Millivolts.   
+  VCC_MILLIVOLTS = (unsigned int)(1125300L / ADC); 
+
+  // 6. Shut it back down to save battery
+  ADCSRA &= ~(1 << ADEN);  // Disable ADC
+  PRR |= (1 << PRADC);     // Return to Power Reduction Mode
+}
+
 int main() {
   // Calibrate oscillator (chip-specific, tune by observation)
   OSCCAL = 92;
 
   // Setup Timer0 in CTC mode, prescaler /64, compare at 125
-  // 8MHz/8/64/125 = 125Hz, so 125 interrupts = 1 second
+  // 1MHz/(64 * 125) = 125Hz, so 125 interrupts = 1 second
   TCCR0A = (1 << WGM01);
   TCCR0B = (TCCR0B & 0xF8) | 0x03;
   TIMSK = (1 << OCIE0A);
-  OCR0A = 125;
+  OCR0A = 124;
 
   // Enable pin change interrupts
   GIMSK = (1 << PCIE);
@@ -385,7 +456,7 @@ int main() {
   PORTB |= (1 << PORTB1);
 
   setupLowPower();
-
+  loadState();
   sei();  // Enable global interrupts
 
   // Initialize OLED
@@ -393,16 +464,26 @@ int main() {
   oled.clear();
   oled.setContrast(0x01);
 
+  // Read the battery voltage on power On
+  readVcc();
+
+  // Power on the display
   DISPLAY_STATE.on(); 
 
+  bool hourPassed;
   // Main loop
   while (1) {
     // Handle 1-second tick
     if (TICKFLAG) {
       TICKFLAG = 0;
-      DATETIME.tick();          
+      hourPassed = DATETIME.tick();
+      if (hourPassed) {
+        saveState();
+        readVcc();        
+      }
+       
       DISPLAY_STATE.tick();
-
+      
       // Manage display state
       if (DISPLAY_STATE.isOn) {
         displayOn();
