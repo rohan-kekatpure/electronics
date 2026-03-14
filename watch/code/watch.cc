@@ -18,7 +18,7 @@ const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
 const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
 char MSG[9] = "CYPRESS.";
-//uint8_t BATTERY_VAL = 0;
+const char* const WEEKDAYS[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 unsigned int VCC_MILLIVOLTS = 0;
 
 // EEPROM Addresses
@@ -321,8 +321,6 @@ void updateDisplay() {
   snprintf(timebuf, sizeof(timebuf), "%02d:%02d:%02d",
            p->hour, p->min, p->sec);
 
-  char *weekdays[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-
   // Display date
   oled.setCursor(8, 0);
   oled.setFont(FONT6X8);
@@ -338,7 +336,7 @@ void updateDisplay() {
   // Display Weekday
   oled.setFont(FONT6X8);
   oled.setCursor(8, 29);    
-  oled.print(weekdays[p->weekday]);
+  oled.print(WEEKDAYS[p->weekday]);
   
   // Show calibration value
   oled.setCursor(36, 29);
