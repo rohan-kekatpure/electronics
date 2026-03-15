@@ -14,17 +14,13 @@ volatile uint8_t SETTER_PRESS = 0;
 volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
-const uint8_t DISPLAY_TIMEOUT = 30;  // Seconds before display turns off
+const uint8_t DISPLAY_TIMEOUT = 5;  // Seconds before display turns off
+const uint8_t DISPLAY_CONTRAST = 0xFF; // max display contrast
 const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
 char MSG[9] = "CYPRESS.";
 const char* const WEEKDAYS[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 unsigned int VCC_MILLIVOLTS = 0;
-
-// EEPROM Addresses
-const uint8_t* EEPROM_SIG_ADDR = 0;
-const uint8_t* EEPROM_DATA_ADDR = 1;
-const uint8_t EEPROM_SIG_VALUE = 0x42;
 
 // Date and time structure
 struct DateTime {
@@ -85,6 +81,12 @@ struct DateTime {
 };
 
 DateTime DATETIME = {25, 12, 31, 23, 59, 50};
+
+// EEPROM Addresses
+const uint8_t* EEPROM_SIG_ADDR = (uint8_t*)0;
+const uint8_t* EEPROM_DATA_ADDR = (uint8_t*)1;
+const uint8_t* EEPROM_MSG_ADDR  = (uint8_t*)(1 + sizeof(DateTime));
+const uint8_t EEPROM_SIG_VALUE = 0x42;
 
 // Display state with auto-timeout
 struct TimedDisplayState {
@@ -370,24 +372,20 @@ void setupLowPower() {
 }
 
 void saveState() {
-  // write signature byte
-  eeprom_update_byte(EEPROM_SIG_ADDR, EEPROM_SIG_VALUE);
-  // write state block
+  eeprom_update_byte((uint8_t*)EEPROM_SIG_ADDR, EEPROM_SIG_VALUE);
   eeprom_update_block((const void*)&DATETIME, (void*)EEPROM_DATA_ADDR, sizeof(DATETIME));
+  eeprom_update_block((const void*)&MSG, (void*)EEPROM_MSG_ADDR, sizeof(MSG));
 }
 
 void loadState() {
-    uint8_t sign = eeprom_read_byte((uint8_t*)EEPROM_SIG_ADDR);
-    // Only load if the signature matches
-    if (sign == EEPROM_SIG_VALUE) {
-        eeprom_read_block(
-          (void*)&DATETIME, 
-          (const void*)EEPROM_DATA_ADDR, 
-          sizeof(DATETIME)
-        );
-    }
+  uint8_t sign = eeprom_read_byte((uint8_t*)EEPROM_SIG_ADDR);
+  // Proceed only if the signature value matches 
+  if (sign == EEPROM_SIG_VALUE) {
+    eeprom_read_block((void*)&DATETIME, (const void*)EEPROM_DATA_ADDR, sizeof(DATETIME));
+    eeprom_read_block((void*)&MSG, (const void*)EEPROM_MSG_ADDR, sizeof(MSG));
+    MSG[8] = '\0'; 
+  }
 }
-
 void readVcc() {
   /*
     Primitive battery status code; simply reports the supply voltage.
@@ -454,13 +452,15 @@ int main() {
   PORTB |= (1 << PORTB1);
 
   setupLowPower();
+  // Save and load state on startup
+  saveState();
   loadState();
   sei();  // Enable global interrupts
 
   // Initialize OLED
   oled.begin(128, 64, sizeof(tiny4koled_init_128x64br), tiny4koled_init_128x64br);  
   oled.clear();
-  oled.setContrast(0x01);
+  oled.setContrast(DISPLAY_CONTRAST);
 
   // Read the battery voltage on power On
   readVcc();
