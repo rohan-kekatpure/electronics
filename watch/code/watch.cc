@@ -14,8 +14,8 @@ volatile uint8_t SETTER_PRESS = 0;
 volatile uint8_t SELECTOR_DEBOUNCE = 0;
 volatile uint8_t SETTER_DEBOUNCE = 0;
 
-const uint8_t DISPLAY_TIMEOUT = 5;  // Seconds before display turns off
-const uint8_t DISPLAY_CONTRAST = 0xFF; // max display contrast
+const uint8_t DISPLAY_TIMEOUT = 10;  // Seconds before display turns off
+const uint8_t DISPLAY_CONTRAST = 0x02; // max display contrast
 const uint8_t SELECTOR_MAX = 0x0F;
 uint8_t SELECTOR = SELECTOR_MAX;
 char MSG[9] = "CYPRESS.";
@@ -43,24 +43,35 @@ struct DateTime {
     }
   }
 
-  bool tick() {
+  uint8_t tick() {
     // Increment seconds and cascade through time units
-    bool hourPassed = false;
+    // Returns a timeByte which signals every minute, 8th minute, 32 minute
+    uint8_t timeByte = 0x00; // Encodes if 1m, 10m, 30m or 1 hour has passed 
     if (++sec == 60) {
       sec = 0;
       min++;
+      timeByte |= _BV(0); // Bit 0 set every minute
+      
+      if ((min & 0x07) == 0) { // Bit 1 set every 8 minutes
+        timeByte |= _BV(1);
+      }
+
+      if ((min & 0x1F) == 0) {
+        timeByte |= _BV(2); // Bit 2 set every 32 minutes
+      }
     }
 
     if (min == 60) {
       hour++;
       min = 0;
-      hourPassed = true;
+      timeByte |= _BV(3); // Set every hour
     }
 
     if (hour == 24) {
       day++;      
       hour = 0;      
       weekday++;
+      timeByte |= _BV(4); // Set every day
     }
 
     if (weekday > 6) {
@@ -70,22 +81,25 @@ struct DateTime {
     if (day > daysInMonth()) {
       month++;
       day = 1;
+      timeByte |= _BV(5); // Set every month      
     }
 
     if (month > 12) {
       year++;
       month = 1;
+      timeByte |= _BV(6); // Set every year
     }
-    return hourPassed;
+    return timeByte;
   }
 };
 
-DateTime DATETIME = {25, 12, 31, 23, 59, 50};
+DateTime DATETIME = {26, 3, 28, 20, 03, 00};
 
 // EEPROM Addresses
 const uint8_t* EEPROM_SIG_ADDR = (uint8_t*)0;
 const uint8_t* EEPROM_DATA_ADDR = (uint8_t*)1;
 const uint8_t* EEPROM_MSG_ADDR  = (uint8_t*)(1 + sizeof(DateTime));
+const uint8_t* EEPROM_OSCCAL_ADDR  = (uint8_t*)(1 + sizeof(DateTime) + 9);
 const uint8_t EEPROM_SIG_VALUE = 0x42;
 
 // Display state with auto-timeout
@@ -330,8 +344,6 @@ void updateDisplay() {
 
   // Display time
   oled.setCursor(8, 10);
-  // oled.setFont(FONT8X16);
-  // oled.setFont(FONT16X32DIGITS);
   oled.setFont(FONT11X16);
   oled.print(timebuf);
 
@@ -375,6 +387,7 @@ void saveState() {
   eeprom_update_byte((uint8_t*)EEPROM_SIG_ADDR, EEPROM_SIG_VALUE);
   eeprom_update_block((const void*)&DATETIME, (void*)EEPROM_DATA_ADDR, sizeof(DATETIME));
   eeprom_update_block((const void*)&MSG, (void*)EEPROM_MSG_ADDR, sizeof(MSG));
+  eeprom_update_byte((uint8_t*)EEPROM_OSCCAL_ADDR, OSCCAL);
 }
 
 void loadState() {
@@ -384,6 +397,7 @@ void loadState() {
     eeprom_read_block((void*)&DATETIME, (const void*)EEPROM_DATA_ADDR, sizeof(DATETIME));
     eeprom_read_block((void*)&MSG, (const void*)EEPROM_MSG_ADDR, sizeof(MSG));
     MSG[8] = '\0'; 
+    OSCCAL = eeprom_read_byte((uint8_t*)EEPROM_OSCCAL_ADDR);    
   }
 }
 void readVcc() {
@@ -452,8 +466,8 @@ int main() {
   PORTB |= (1 << PORTB1);
 
   setupLowPower();
-  // Save and load state on startup
-  saveState();
+  
+  // Load state on startup
   loadState();
   sei();  // Enable global interrupts
 
@@ -468,14 +482,14 @@ int main() {
   // Power on the display
   DISPLAY_STATE.on(); 
 
-  bool hourPassed;
+  uint8_t timeByte;
   // Main loop
   while (1) {
     // Handle 1-second tick
     if (TICKFLAG) {
       TICKFLAG = 0;
-      hourPassed = DATETIME.tick();
-      if (hourPassed) {
+      timeByte = DATETIME.tick();
+      if (timeByte & _BV(0)) { // Update EEPROM and bettery every minute
         saveState();
         readVcc();        
       }
