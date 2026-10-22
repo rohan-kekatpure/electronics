@@ -5,3 +5,5 @@
 **/*.lck
 **/fabrication-toolkit-options.json
 **/fp-info-cache
+**/*.elf
+**/*.o
