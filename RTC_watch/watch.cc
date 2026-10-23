@@ -11,7 +11,7 @@
 #define BAUD 9600
 #define MYUBRR (F_CPU / 16 / BAUD - 1)
 
-#define DS3231_ADDR 0xD0 // 0x68 shifted left by 1 bit for I2C write (0x68 << 1)
+#define DS3231_ADDR 0xD0 // 0x68 shifted left by 1 bit for I2C write
 
 // ============================================================================
 // HARDWARE PIN MAPPING DEFINITIONS
@@ -163,7 +163,6 @@ static const uint8_t segment_font[10] = {
 #define SEG_u     0b00011100
 
 // 7-Day Lookup Table: [Digit 1, Digit 2, Digit 3, Digit 4]
-// Index 0 is placeholder (1-indexed for DoW 1 to 7)
 static const uint8_t dow_font[8][4] = {
     {SEG_BLANK, SEG_BLANK, SEG_BLANK, SEG_BLANK}, // 0: Placeholder
     {SEG_BLANK, SEG_n,     SEG_o,     SEG_n    }, // 1:  non (Mon)
@@ -255,7 +254,6 @@ void ds3231_write_time(void) {
 
 // Write Alarm 1 (0x07) and Alarm 2 (0x0B) to DS3231 registers
 void ds3231_write_alarms(void) {
-    // Write Alarm 1
     i2c_start();
     i2c_write(DS3231_ADDR);
     i2c_write(0x07);
@@ -265,7 +263,6 @@ void ds3231_write_alarms(void) {
     i2c_write(0x80);
     i2c_stop();
 
-    // Write Alarm 2
     i2c_start();
     i2c_write(DS3231_ADDR);
     i2c_write(0x0B);
@@ -349,7 +346,6 @@ void display_init(void) {
     DIG3_PORT &= ~(1 << DIG3_PIN);
     DIG4_PORT &= ~(1 << DIG4_PIN);
 
-    // Set PB1 and PB2 as inputs
     BTN_DDR &= ~((1 << BTN_SELECT) | (1 << BTN_SET));
 }
 
@@ -395,10 +391,8 @@ void buttons_init(void) {
 ISR(TIMER1_COMPA_vect) {
     static uint8_t current_digit = 0;
 
-    // 1. Clear current digit
     display_clear_all();
 
-    // 2. Fetch pattern
     uint8_t pattern = 0;
     if (g_current_page == PAGE_DOW) {
         uint8_t day_index = g_watch.dow;
@@ -408,15 +402,12 @@ ISR(TIMER1_COMPA_vect) {
         pattern = segment_font[g_display_digits[current_digit] % 10];
     }
 
-    // Apply Decimal Point
     if (g_dp_mask & (1 << current_digit)) {
         pattern |= (1 << 7);
     }
 
-    // 3. Write segment state
     display_set_segments(pattern);
 
-    // 4. Enable single active digit MOSFET
     switch (current_digit) {
         case 0: DIG1_PORT |= (1 << DIG1_PIN); break;
         case 1: DIG2_PORT |= (1 << DIG2_PIN); break;
@@ -437,7 +428,7 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 ISR(PCINT0_vect) {
-    // Pin change captured; debouncing handled in main loop
+    // Pin change captured; state machine debouncing handled in main loop
 }
 
 uint8_t get_days_in_month(uint8_t month, uint16_t year) {
@@ -620,7 +611,7 @@ void update_display_buffer(void) {
             g_display_digits[3] = g_watch.year % 10;
 
             if (g_set_field == SET_YEAR_YY && g_blink_state) {
-                g_dp_mask |= 0x0F; // Blink all 4 DPs when setting year
+                g_dp_mask |= 0x0F;
             }
             break;
 
@@ -667,8 +658,11 @@ void update_display_buffer(void) {
 // ============================================================================
 
 int main(void) {   
-    char buffer[64];
-    uint16_t select_hold_timer = 0;
+    char buffer[64]; // Expanded to 64 bytes to eliminate gcc truncation warning
+
+    static bool select_was_pressed = false;
+    static uint16_t select_hold_ticks = 0;
+    static bool set_was_pressed = false;
 
     display_init();
     buttons_init();
@@ -681,7 +675,7 @@ int main(void) {
     ds3231_check_power_loss();
     ds3231_read_all();
 
-    uart_print("\r\n--- 6-Page Watch Ready ---\r\n");
+    uart_print("\r\n--- Non-Blocking State Watch Ready ---\r\n");
 
     while (true) {
         if (g_set_field == SET_NONE) {
@@ -690,33 +684,51 @@ int main(void) {
 
         if (g_debounce_ticks == 0) {
             
-            // SELECT BUTTON (PB1)
-            if (!(BTN_PIN & (1 << BTN_SELECT))) {
-                select_hold_timer = 0;
+            // SELECT BUTTON (PB1) - State-based Press/Hold
+            bool select_is_down = !(BTN_PIN & (1 << BTN_SELECT));
 
-                while (!(BTN_PIN & (1 << BTN_SELECT)) && select_hold_timer < 500) {
-                    _delay_ms(4);
-                    select_hold_timer++;
-                }
-
-                if (select_hold_timer >= 500) {
-                    advance_set_field();
+            if (select_is_down) {
+                if (!select_was_pressed) {
+                    select_was_pressed = true;
+                    select_hold_ticks = 0;
                 } else {
+                    select_hold_ticks++;
+                    
+                    // Long press threshold (~500ms at 10ms main loop rate)
+                    if (select_hold_ticks >= 50) {
+                        advance_set_field();
+                        select_was_pressed = false; 
+                        g_debounce_ticks = 30; // 300ms guard after hold
+                    }
+                }
+            } else {
+                if (select_was_pressed) {
+                    // Short press triggers cleanly on button RELEASE
                     if (g_set_field != SET_NONE) {
                         advance_set_field();
                     } else {
                         g_current_page = (DisplayPage_t)((g_current_page + 1) % 6);
                     }
+                    
+                    select_was_pressed = false;
+                    select_hold_ticks = 0;
+                    g_debounce_ticks = 15; // 150ms release debounce
                 }
-                g_debounce_ticks = 75;
             }
 
-            // SET BUTTON (PB2)
-            if (!(BTN_PIN & (1 << BTN_SET))) {
-                if (g_set_field != SET_NONE) {
-                    increment_set_field();
+            // SET BUTTON (PB2) - Value Increment
+            bool set_is_down = !(BTN_PIN & (1 << BTN_SET));
+
+            if (set_is_down) {
+                if (!set_was_pressed) {
+                    set_was_pressed = true;
+                    if (g_set_field != SET_NONE) {
+                        increment_set_field();
+                    }
+                    g_debounce_ticks = 15; // 150ms light debounce
                 }
-                g_debounce_ticks = 50;
+            } else {
+                set_was_pressed = false;
             }
         }
 
@@ -727,7 +739,7 @@ int main(void) {
                  g_watch.hour, g_watch.min, g_watch.sec);
         uart_print(buffer);
 
-        _delay_ms(100);
+        _delay_ms(10); // Fast 10ms main iteration for smooth button polling
     }
 
     return 0;
