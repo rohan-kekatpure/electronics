@@ -45,13 +45,17 @@ static bool g_uart_debug_enabled = false;
 // ============================================================================
 
 typedef enum {
-    PAGE_TIME = 0,    // Page 1: HH:MM
-    PAGE_DATE,        // Page 2: MM.DD
-    PAGE_YEAR,        // Page 3: YYYY
-    PAGE_DOW,         // Page 4: 3-Letter Weekday
-    PAGE_ALARM1,      // Page 5: A1 HH:MM
-    PAGE_ALARM2       // Page 6: A2 HH:MM
+    PAGE_TIME = 0,        // Page 1: HH:MM
+    PAGE_DATE,            // Page 2: MM.DD
+    PAGE_YEAR,            // Page 3: YYYY
+    PAGE_DOW,             // Page 4: 3-Letter Weekday
+    PAGE_ALARM1,          // Page 5: A1 HH:MM (Time)
+    PAGE_ALARM1_TOGGLE,   // Page 6: A on / A OFF
+    PAGE_ALARM2,          // Page 7: A2 HH:MM (Time)
+    PAGE_ALARM2_TOGGLE    // Page 8: b on / b OFF
 } DisplayPage_t;
+
+#define TOTAL_PAGES 8
 
 typedef enum {
     SET_NONE = 0,
@@ -77,15 +81,17 @@ typedef struct {
     uint16_t year;
     uint8_t a1_hour;
     uint8_t a1_min;
+    bool a1_enabled;
     uint8_t a2_hour;
     uint8_t a2_min;
+    bool a2_enabled;
 } WatchData_t;
 
 // ============================================================================
 // GLOBAL STATE & FONTS
 // ============================================================================
 
-static WatchData_t g_watch = {0, 0, 12, 1, 17, 10, 2026, 7, 0, 8, 0};
+static WatchData_t g_watch = {0, 0, 12, 1, 17, 10, 2026, 7, 0, false, 8, 0, false};
 static DisplayPage_t g_current_page = PAGE_TIME;
 static SetField_t g_set_field = SET_NONE;
 
@@ -103,6 +109,12 @@ volatile bool     g_update_display_flag = true;
 volatile uint8_t  g_rtc_ticks = 0;
 volatile bool     g_read_rtc_flag = false;
 
+// Active Alarm Tracking
+volatile uint8_t g_alarm_active = 0;      // 0 = None, 1 = Alarm 1, 2 = Alarm 2
+volatile uint8_t g_alarm_cycle_count = 0; // Counts up to 20 cycles
+static int8_t g_last_alarm1_min = -1;
+static int8_t g_last_alarm2_min = -1;
+
 static const uint8_t segment_font[10] = {
     0b00111111, // 0
     0b00000110, // 1
@@ -118,6 +130,7 @@ static const uint8_t segment_font[10] = {
 
 #define SEG_BLANK 0b00000000
 #define SEG_A     0b01110111
+#define SEG_b     0b01111100
 #define SEG_d     0b01011110
 #define SEG_E     0b01111001
 #define SEG_F     0b01110001
@@ -198,24 +211,64 @@ uint8_t bcd_to_dec(uint8_t val) { return ((val / 16 * 10) + (val % 16)); }
 uint8_t dec_to_bcd(uint8_t val) { return ((val / 10 * 16) + (val % 10)); }
 
 // ============================================================================
-// BUZZER ROUTINE (PASSIVE PIEZO ON PC3)
+// BUZZER & ALARM PATTERNS (PC3)
 // ============================================================================
 
 void buzzer_init(void) {
-    BUZZER_DDR  |= (1 << BUZZER_PIN);   // Set PC3 as Output
-    BUZZER_PORT &= ~(1 << BUZZER_PIN);  // Default LOW
+    BUZZER_DDR  |= (1 << BUZZER_PIN);   
+    BUZZER_PORT &= ~(1 << BUZZER_PIN);  
 }
 
-// Emits a crisp 2.5kHz chime for the specified duration in ms
-void buzzer_beep(uint16_t duration_ms) {
-    // 2.5kHz period = 400us (200us HIGH, 200us LOW)
-    uint16_t cycles = (uint32_t)duration_ms * 1000 / 400;
-    for (uint16_t i = 0; i < cycles; i++) {
-        BUZZER_PORT |= (1 << BUZZER_PIN);
-        _delay_us(200);
-        BUZZER_PORT &= ~(1 << BUZZER_PIN);
-        _delay_us(200);
+// Plays a square wave tone at a specific frequency (in Hz)
+void buzzer_tone(uint16_t freq_hz, uint16_t duration_ms) {
+    if (g_alarm_active != 0 && (SELECTOR_PRESS || SETTER_PRESS)) {
+        return; // Terminate immediately if a button is pushed
     }
+
+    if (freq_hz == 0) {
+        for (uint16_t d = 0; d < duration_ms; d++) {
+            _delay_ms(1);
+            if (g_alarm_active != 0 && (SELECTOR_PRESS || SETTER_PRESS)) return;
+        }
+        return;
+    }
+    
+    uint16_t half_period_us = 1000000UL / (2UL * freq_hz);
+    uint32_t total_cycles = ((uint32_t)duration_ms * 1000UL) / (2UL * half_period_us);
+
+    for (uint32_t i = 0; i < total_cycles; i++) {
+        if (g_alarm_active != 0 && (SELECTOR_PRESS || SETTER_PRESS)) return;
+        BUZZER_PORT |= (1 << BUZZER_PIN);
+        for (uint16_t h = 0; h < half_period_us / 4; h++) _delay_us(4);
+        BUZZER_PORT &= ~(1 << BUZZER_PIN);
+        for (uint16_t h = 0; h < half_period_us / 4; h++) _delay_us(4);
+    }
+}
+
+void buzzer_beep(uint16_t duration_ms) {
+    buzzer_tone(2500, duration_ms);
+}
+
+// Alarm Pattern A: Fast triple pip (2.8kHz)
+void play_alarm_pattern_a(void) {
+    for (uint8_t i = 0; i < 3; i++) {
+        if (g_alarm_active == 0 || SELECTOR_PRESS || SETTER_PRESS) return;
+        buzzer_tone(2800, 60);
+        buzzer_tone(0, 50);
+    }
+    buzzer_tone(0, 350);
+}
+
+// Alarm Pattern B: High-Low siren cadence (3.0kHz / 2.0kHz)
+void play_alarm_pattern_b(void) {
+    for (uint8_t i = 0; i < 2; i++) {
+        if (g_alarm_active == 0 || SELECTOR_PRESS || SETTER_PRESS) return;
+        buzzer_tone(3000, 110);
+        buzzer_tone(0, 30);
+        buzzer_tone(2000, 110);
+        buzzer_tone(0, 50);
+    }
+    buzzer_tone(0, 300);
 }
 
 // ============================================================================
@@ -488,6 +541,10 @@ void advance_set_field(void) {
             else if (g_set_field == SET_A2_HH) g_set_field = SET_A2_MM;
             else { g_set_field = SET_NONE; ds3231_write_alarms(); }
             break;
+
+        default:
+            g_set_field = SET_NONE;
+            break;
     }
 }
 
@@ -553,6 +610,7 @@ void update_display(void) {
             break;
         }
 
+        // Clean Alarm 1 Time Display: HH:MM with NO extra DPs
         case PAGE_ALARM1:
             patterns[0] = segment_font[g_watch.a1_hour / 10];
             patterns[1] = segment_font[g_watch.a1_hour % 10];
@@ -561,7 +619,6 @@ void update_display(void) {
 
             if (g_set_field == SET_NONE) {
                 colon_on = true;
-                dp_mask |= (1 << 0);
             } else if (g_set_field == SET_A1_HH) {
                 colon_on = g_blink_state;
                 if (g_blink_state) dp_mask |= (1 << 0) | (1 << 1);
@@ -571,6 +628,22 @@ void update_display(void) {
             }
             break;
 
+        // Alarm 1 Toggle Screen: "A  on" or "A OFF"
+        case PAGE_ALARM1_TOGGLE:
+            patterns[0] = SEG_A;
+            if (g_watch.a1_enabled) {
+                patterns[1] = SEG_BLANK;
+                patterns[2] = SEG_o;
+                patterns[3] = SEG_n;
+            } else {
+                patterns[1] = SEG_o;
+                patterns[2] = SEG_F;
+                patterns[3] = SEG_F;
+            }
+            colon_on = false;
+            break;
+
+        // Clean Alarm 2 Time Display: HH:MM with NO extra DPs
         case PAGE_ALARM2:
             patterns[0] = segment_font[g_watch.a2_hour / 10];
             patterns[1] = segment_font[g_watch.a2_hour % 10];
@@ -579,7 +652,6 @@ void update_display(void) {
 
             if (g_set_field == SET_NONE) {
                 colon_on = true;
-                dp_mask |= (1 << 0) | (1 << 1);
             } else if (g_set_field == SET_A2_HH) {
                 colon_on = g_blink_state;
                 if (g_blink_state) dp_mask |= (1 << 0) | (1 << 1);
@@ -587,6 +659,21 @@ void update_display(void) {
                 colon_on = g_blink_state;
                 if (g_blink_state) dp_mask |= (1 << 2) | (1 << 3);
             }
+            break;
+
+        // Alarm 2 Toggle Screen: "b  on" or "b OFF"
+        case PAGE_ALARM2_TOGGLE:
+            patterns[0] = SEG_b;
+            if (g_watch.a2_enabled) {
+                patterns[1] = SEG_BLANK;
+                patterns[2] = SEG_o;
+                patterns[3] = SEG_n;
+            } else {
+                patterns[1] = SEG_o;
+                patterns[2] = SEG_F;
+                patterns[3] = SEG_F;
+            }
+            colon_on = false;
             break;
     }
 
@@ -613,46 +700,96 @@ int main(void) {
     ds3231_check_power_loss();
     ds3231_read_all();
 
-    // Startup beep confirms piezo polarity & functionality
     buzzer_beep(40);
 
-    uart_print("\r\n--- HT16K33 Watch (Chime Enabled) Ready ---\r\n");
+    uart_print("\r\n--- HT16K33 Watch (20-Cycle Dual Alarms) Ready ---\r\n");
 
     while (true) {
-        // 1. Process SELECT Button Interrupt Event
-        if (SELECTOR_PRESS) {
-            SELECTOR_PRESS = 0;
-            if (g_set_field != SET_NONE) {
-                advance_set_field();
-            } else {
-                g_current_page = (DisplayPage_t)((g_current_page + 1) % 6);
+        // ====================================================================
+        // 1. BUTTON EVENT HANDLING (Normal UI vs. Alarm Suspension)
+        // ====================================================================
+
+        // If the alarm is currently sounding, suspend normal actions:
+        // Either button turns OFF the alarm immediately and exits the block.
+        if (g_alarm_active != 0) {
+            if (SELECTOR_PRESS || SETTER_PRESS) {
+                SELECTOR_PRESS = 0;
+                SETTER_PRESS = 0;
+                g_alarm_active = 0;
+                g_alarm_cycle_count = 0;
+                update_display();
             }
-            update_display();
+        } else {
+            // Normal button functionality active only when alarm is quiet
+            if (SELECTOR_PRESS) {
+                SELECTOR_PRESS = 0;
+                if (g_set_field != SET_NONE) {
+                    advance_set_field();
+                } else {
+                    g_current_page = (DisplayPage_t)((g_current_page + 1) % TOTAL_PAGES);
+                }
+                update_display();
+            }
+
+            if (SETTER_PRESS) {
+                SETTER_PRESS = 0;
+                if (g_set_field != SET_NONE) {
+                    increment_set_field();
+                } else if (g_current_page == PAGE_ALARM1_TOGGLE) {
+                    g_watch.a1_enabled = !g_watch.a1_enabled;
+                    buzzer_beep(20);
+                } else if (g_current_page == PAGE_ALARM2_TOGGLE) {
+                    g_watch.a2_enabled = !g_watch.a2_enabled;
+                    buzzer_beep(20);
+                } else {
+                    advance_set_field();
+                }
+                update_display();
+            }
         }
 
-        // 2. Process SET Button Interrupt Event
-        if (SETTER_PRESS) {
-            SETTER_PRESS = 0;
-            if (g_set_field != SET_NONE) {
-                increment_set_field();
-            } else {
-                advance_set_field();
-            }
-            update_display();
-        }
-
-        // 3. Periodic Background RTC Read (2Hz) & Minute Chime Trigger
+        // ====================================================================
+        // 2. BACKGROUND RTC READ & ALARM ARMS
+        // ====================================================================
         if (g_read_rtc_flag) {
             g_read_rtc_flag = false;
             if (g_set_field == SET_NONE) {
                 ds3231_read_all();
 
-                // Trigger a 35ms 2.5kHz chime when the minute changes at second 0
-                if (g_watch.sec == 0 && g_watch.min != last_buzzed_minute) {
-                    last_buzzed_minute = g_watch.min;
-                    buzzer_beep(35); // Clean, crisp minute chime
-                } else if (g_watch.sec != 0) {
-                    last_buzzed_minute = -1; // Arm for next rollover
+                // Alarm 1 Trigger Check
+                if (g_watch.a1_enabled && 
+                    g_watch.hour == g_watch.a1_hour && 
+                    g_watch.min == g_watch.a1_min && 
+                    g_watch.sec < 10 && 
+                    g_last_alarm1_min != g_watch.min) {
+                    g_alarm_active = 1;
+                    g_alarm_cycle_count = 20; // Run 20 times max
+                    g_last_alarm1_min = g_watch.min;
+                }
+
+                // Alarm 2 Trigger Check
+                if (g_watch.a2_enabled && 
+                    g_watch.hour == g_watch.a2_hour && 
+                    g_watch.min == g_watch.a2_min && 
+                    g_watch.sec < 10 && 
+                    g_last_alarm2_min != g_watch.min) {
+                    g_alarm_active = 2;
+                    g_alarm_cycle_count = 20; // Run 20 times max
+                    g_last_alarm2_min = g_watch.min;
+                }
+
+                // Rearm triggers when minute rolls over
+                if (g_watch.min != g_watch.a1_min) g_last_alarm1_min = -1;
+                if (g_watch.min != g_watch.a2_min) g_last_alarm2_min = -1;
+
+                // Minute Chime at 00s (only when alarm isn't active)
+                if (g_alarm_active == 0) {
+                    if (g_watch.sec == 0 && g_watch.min != last_buzzed_minute) {
+                        last_buzzed_minute = g_watch.min;
+                        buzzer_beep(35);
+                    } else if (g_watch.sec != 0) {
+                        last_buzzed_minute = -1;
+                    }
                 }
             }
 
@@ -664,7 +801,28 @@ int main(void) {
             }
         }
 
-        // 4. Periodic Display Refresh (~20Hz and Blinking)
+        // ====================================================================
+        // 3. SOUND GENERATION & CYCLE DECREMENT
+        // ====================================================================
+        if (g_alarm_active == 1) {
+            play_alarm_pattern_a();
+            if (g_alarm_active != 0) { // If not silenced mid-melody
+                if (--g_alarm_cycle_count == 0) {
+                    g_alarm_active = 0; // Terminate after 20 cycles
+                }
+            }
+        } else if (g_alarm_active == 2) {
+            play_alarm_pattern_b();
+            if (g_alarm_active != 0) { // If not silenced mid-melody
+                if (--g_alarm_cycle_count == 0) {
+                    g_alarm_active = 0; // Terminate after 20 cycles
+                }
+            }
+        }
+
+        // ====================================================================
+        // 4. PERIODIC DISPLAY REFRESH
+        // ====================================================================
         if (g_update_display_flag) {
             g_update_display_flag = false;
             update_display();
